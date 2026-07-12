@@ -1,0 +1,101 @@
+# mod_glss_functions
+!! GLSS school automation. See mod_glss for how these get triggered.
+
+!! ---------------------------------------------------------------------
+!! ghost_credit
+!! Background credit for a full school day. Mirrors the attendance
+!! bookkeeping at the top of gschool_lessons 'morning'. Runs silently
+!! from the dispatcher, so it must not print or change the screen.
+!! Deliberately skipped: gschool_socialchg (interactive school social
+!! life) and the uniform check - Sveta was never really there.
+!! ---------------------------------------------------------------------
+if $ARGS[0] = 'ghost_credit':
+	gschoolVars['last_attendance'] = daystart
+	gschoolVars['absence_count'] -= 1
+	school_lunch = 0
+	if missing_class > 9:
+		missing_class -= 9
+	elseif missing_class > 6:
+		missing_class -= 6
+	end
+	lernSkill += 1
+	lernHome += 1
+	gs 'mod_glss_functions', 'day_grades', 0
+	exit
+end
+
+
+!! ---------------------------------------------------------------------
+!! auto_day
+!! One-click school day, started from the hallway action injected by
+!! mod_glss. Attendance was already credited when 'morning' ran; this
+!! credits the remaining lessons and moves the clock to the end of the
+!! school day (14:00). Time-based needs (hunger, energy, etc.) are
+!! drained by the normal stat processing of the elapsed time.
+!! ---------------------------------------------------------------------
+if $ARGS[0] = 'auto_day':
+	*clr & cla
+	$menu_loc = 'gschool_lessons'
+	$menu_arg = 'short_break'
+	$location_type = 'public_indoors'
+	menu_off = 0
+	killvar 'breaktype'
+
+	gs 'mod_glss_functions', 'day_grades', school_period
+
+	if hour*60 + minut < 14*60: minut += 14*60 - (hour*60 + minut)
+	school_period = 0
+	gs 'stat'
+
+	$func('wrap', 'header center b', 'School')
+	'<center><img <<$set_imgh>> src="images/locations/pavlovsk/school/building/gschool_hall0<<rand(0,2)>>.jpg"></center>'
+	'You put your head down and let the school day carry you along: lessons, breaks and hallway chatter blur together until the final bell rings.'
+	'<i>You didn''t stop for lunch, so grab something to eat if you''re hungry.</i>'
+
+	act 'Head out to the school grounds': gt 'gschool_grounds', 'main'
+	exit
+end
+
+
+!! ---------------------------------------------------------------------
+!! day_grades
+!! Grade credit for the current day of lessons from period ARGS[1] onwards.
+!! The subject table matches the real lesson dispatcher in
+!! gschool_lessons 'schedule' (periods 2 and 5 are breaks). Each class
+!! gets attendance plus one intellect-modified participation activity,
+!! so automated days are solid but never beat playing lessons yourself.
+!! Runs at most once per game day.
+!! ---------------------------------------------------------------------
+if $ARGS[0] = 'day_grades':
+	if glss['grades_day'] = daystart: exit
+	glss['grades_day'] = daystart
+
+	killvar 'glss_subj'
+	if week = 1:
+		$glss_subj[0] = 'math' & $glss_subj[1] = 'rus' & $glss_subj[3] = 'eng' & $glss_subj[4] = 'art' & $glss_subj[6] = 'bio' & $glss_subj[7] = 'pe'
+	elseif week = 2:
+		$glss_subj[0] = 'lit' & $glss_subj[1] = 'geo' & $glss_subj[3] = 'sci' & $glss_subj[4] = 'shop' & $glss_subj[6] = 'comp' & $glss_subj[7] = 'mus'
+	elseif week = 3:
+		$glss_subj[0] = 'math' & $glss_subj[1] = 'rus' & $glss_subj[3] = 'bio' & $glss_subj[4] = 'his' & $glss_subj[6] = 'comp' & $glss_subj[7] = 'pe'
+	elseif week = 4:
+		$glss_subj[0] = 'lit' & $glss_subj[1] = 'geo' & $glss_subj[3] = 'sci' & $glss_subj[4] = 'shop' & $glss_subj[6] = 'comp' & $glss_subj[7] = 'mus'
+	elseif week = 5:
+		$glss_subj[0] = 'math' & $glss_subj[1] = 'rus' & $glss_subj[3] = 'eng' & $glss_subj[4] = 'art' & $glss_subj[6] = 'his' & $glss_subj[7] = 'pe'
+	end
+
+	glss_i = ARGS[1]
+	if glss_i < 0: glss_i = 0
+	:glss_subj_loop
+	if $glss_subj[glss_i] ! '':
+		gs 'grades', 'attend_class', 'school', $glss_subj[glss_i]
+		gs 'grades', 'class_activity_attributes', 'school', $glss_subj[glss_i], pcs_intel
+	end
+	glss_i += 1
+	if glss_i < 8: jump 'glss_subj_loop'
+
+	killvar 'glss_i'
+	killvar 'glss_subj'
+	exit
+end
+
+--- mod_glss_functions ---------------------------------

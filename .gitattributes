@@ -1,0 +1,6 @@
+* text=auto
+*.qsrc text eol=lf
+*.sh text eol=lf
+*.qproj text eol=lf
+*.qsp binary
+*.bat text eol=crlf

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<QGen-project version="4.0.0 beta 1">
+	<Structure>
+		<Folder name="system">
+			<Location name="mod_glss_setup"/>
+			<Location name="mod_glss"/>
+			<Location name="mod_glss_options"/>
+			<Location name="mod_glss_readme"/>
+			<Location name="mod_glss_saveupdater"/>
+		</Folder>
+		<Folder name="content">
+			<Location name="mod_glss_functions"/>
+		</Folder>
+	</Structure>
+</QGen-project>

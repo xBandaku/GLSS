@@ -1,0 +1,19 @@
+# mod_glss_readme
+!! Shown when clicking the info icon next to the mod on the Mods settings page.
+
+*clr & cla
+'<center><h2>GLSS - Girl Life School Skip</h2></center>'
+'GLSS automates the Pavlovsk school routine so you can spend your days as you like. It has two independent features, both disabled by default. Enable them from the Options link on the Mods page.'
+*nl
+'<b>One-click school day</b>'
+'A new action appears in the school hallway in the morning and between classes: "GLSS: Attend the rest of the school day automatically". Sveta sits through every remaining lesson with average participation and the clock jumps to the end of the school day. Homework still lands in your journal and grades tick up as if you attended with decent focus.'
+*nl
+'<b>Ghost attendance</b>'
+'School simply happens without you. On every school day, from 8:00 onwards, attendance and average grades are credited automatically no matter where you are. No absences accrue, your mother will not confront you, and truancy can no longer get you expelled.'
+*nl
+'<b>What automation does not do</b>'
+'Automated school days skip the school''s social life: friendships, gossip, cheerleading, random classroom events and detention do not progress. Playing the lessons yourself remains slightly better for grades. Special morning scenes (a principal summons, grade postings, invitations) still play out normally when you show up in person.'
+
+act 'Return': gt '$menu_settings', 'mods'
+
+--- mod_glss_readme ---------------------------------

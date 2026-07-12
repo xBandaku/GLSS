@@ -1,0 +1,29 @@
+# mod_glss_setup
+!! GLSS - Girl Life School Skip
+!! Basic mod information. This location must be the first one in the qproj.
+
+$mod_info[0] = 'glss'
+!! 0 = mod name, saved to the $mod_name[i] array
+
+$mod_info[1] = '00100'
+!! 1 = mod version, displayed as 0.1
+
+$mod_info[2] = 'GLSS-Rolling'
+!! 2 = mod author
+
+$mod_info[3] = 'School Skip: optional automation of the Pavlovsk school day. One-click auto-attendance and background (ghost) attendance, toggled in Options.'
+!! 3 = mod description, shown on the Mods settings page
+
+$mod_info[4] = 'Options'
+!! 4 = mod options/settings link name
+
+if $curloc = 'mod_<<$mod_info[0]>>_setup':
+	usehtml = 1
+	!! Only shown if the mod .qsp is opened directly in a player.
+	'<center><h1><font color=red>ACCESS DENIED</font></h1></center>'
+	'<<$mod_info[0]>> is a mod for <b>Girl Life - English Community Version</b> and cannot be played on its own.'
+	''
+	'Install the main game, copy glss.qsp into its "mod" folder and enable the mod from Settings -> Mods.'
+end
+
+--- mod_glss_setup ---------------------------------

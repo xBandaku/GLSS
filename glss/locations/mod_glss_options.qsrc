@@ -1,0 +1,26 @@
+# mod_glss_options
+!! GLSS options page, opened from the Options link on the Mods settings page.
+
+*clr & cla
+'<center><h2>GLSS - Girl Life School Skip</h2></center>'
+'Both features only take effect on the schoolgirl start, on school days during term time, while you are enrolled and not expelled. They are independent and can be combined.'
+*nl
+if glss['auto_school'] = 1:
+	'<b>One-click school day:</b> <a href="exec: glss[''auto_school''] = 0 & gs ''mod_glss_options''">Enabled</a> (click to disable)'
+else
+	'<b>One-click school day:</b> <a href="exec: glss[''auto_school''] = 1 & gs ''mod_glss_options''">Disabled</a> (click to enable)'
+end
+'Adds a "GLSS: Attend the rest of the school day automatically" action to the school hallway in the morning and between classes. Sveta sits through every remaining lesson with average participation and the clock jumps to the end of the school day (14:00). Lunch is not eaten automatically.'
+*nl
+if glss['ghost_school'] = 1:
+	'<b>Ghost attendance:</b> <a href="exec: glss[''ghost_school''] = 0 & gs ''mod_glss_options''">Enabled</a> (click to disable)'
+else
+	'<b>Ghost attendance:</b> <a href="exec: glss[''ghost_school''] = 1 & gs ''mod_glss_options''">Disabled</a> (click to enable)'
+end
+'School happens without you. On every school day from 8:00, attendance and average grades are credited automatically wherever you are, and you are free to spend the day as you wish. No absences accrue, your mother never confronts you about truancy, and you cannot be expelled for skipping.'
+*nl
+'<i>Notes: automated days use average participation, so playing lessons yourself is still slightly better for grades. Automated attendance skips the school''s social life: friendships, gossip, cheerleading and classroom events do not progress on automated days. If ghost attendance already credited today and you attend lessons in person anyway, that day''s lesson grades can count twice.</i>'
+
+act 'Return': gt '$menu_settings', 'mods'
+
+--- mod_glss_options ---------------------------------
