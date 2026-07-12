@@ -24,7 +24,7 @@ Either produces `glss.qsp`.
 
 ## Installing
 
-1. Copy `glss.qsp` into the `mod` folder of your Girl Life install (create the folder next to `glife.qsp` if it doesn't exist).
+1. Copy `glss.qsp` (built above, or downloaded from the [Releases page](https://github.com/xBandaku/Girl-Life-School-Skip/releases)) into the `mod` folder of your Girl Life install (create the folder next to `glife.qsp` if it doesn't exist).
 2. In game: Settings → Mods → install new mod → enter `glss`.
 3. Click the mod's **Options** link to enable the features you want.
 

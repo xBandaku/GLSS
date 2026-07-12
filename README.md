@@ -1,6 +1,10 @@
 # Girl Life School Skip (GLSS)
 
+[![Latest release](https://img.shields.io/github/v/release/xBandaku/Girl-Life-School-Skip)](https://github.com/xBandaku/Girl-Life-School-Skip/releases/latest)
+
 A mod for **[Girl Life — English Community Version](https://gitlab.com/kevinsmartstfg/girl-life)** (an adult 18+ life-sim game for the QSP engine) that makes the Pavlovsk school routine optional, so your mornings are yours again.
+
+**Download:** grab `glss.qsp` from the [latest release](https://github.com/xBandaku/Girl-Life-School-Skip/releases/latest) — every version is published on the [Releases page](https://github.com/xBandaku/Girl-Life-School-Skip/releases).
 
 Vanilla Girl Life expects Sveta at school every weekday from 8:00 to 14:00, one clicked-through lesson at a time — and skipping it means climbing an absence ladder of angry mother confrontations that ends in expulsion. GLSS gives you two ways out, both toggleable in-game and **off by default**:
 
@@ -19,7 +23,7 @@ School simply happens without you. On every school day from 8:00, attendance and
 
 ## Installing
 
-1. Download `glss.qsp` (in [`glss/`](glss/)) or build it yourself (below).
+1. Download `glss.qsp` from the [latest release](https://github.com/xBandaku/Girl-Life-School-Skip/releases/latest), or build it yourself (below).
 2. Copy it into the `mod` folder of your Girl Life install — create the folder next to `glife.qsp` if it doesn't exist.
 3. In game: **Settings → Mods → install new mod** → enter `glss`.
 4. Click the mod's **Options** link and enable the features you want.
