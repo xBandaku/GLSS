@@ -70,21 +70,17 @@ if $ARGS[0] = 'day_grades':
 	if glss['grades_day'] = daystart: exit
 	glss['grades_day'] = daystart
 
-	killvar 'glss_subj'
 	if week = 1:
 		$glss_subj[0] = 'math' & $glss_subj[1] = 'rus' & $glss_subj[3] = 'eng' & $glss_subj[4] = 'art' & $glss_subj[6] = 'bio' & $glss_subj[7] = 'pe'
-	elseif week = 2:
+	elseif week = 2 or week = 4:
 		$glss_subj[0] = 'lit' & $glss_subj[1] = 'geo' & $glss_subj[3] = 'sci' & $glss_subj[4] = 'shop' & $glss_subj[6] = 'comp' & $glss_subj[7] = 'mus'
 	elseif week = 3:
 		$glss_subj[0] = 'math' & $glss_subj[1] = 'rus' & $glss_subj[3] = 'bio' & $glss_subj[4] = 'his' & $glss_subj[6] = 'comp' & $glss_subj[7] = 'pe'
-	elseif week = 4:
-		$glss_subj[0] = 'lit' & $glss_subj[1] = 'geo' & $glss_subj[3] = 'sci' & $glss_subj[4] = 'shop' & $glss_subj[6] = 'comp' & $glss_subj[7] = 'mus'
 	elseif week = 5:
 		$glss_subj[0] = 'math' & $glss_subj[1] = 'rus' & $glss_subj[3] = 'eng' & $glss_subj[4] = 'art' & $glss_subj[6] = 'his' & $glss_subj[7] = 'pe'
 	end
 
 	glss_i = ARGS[1]
-	if glss_i < 0: glss_i = 0
 	:glss_subj_loop
 	if $glss_subj[glss_i] ! '':
 		gs 'grades', 'attend_class', 'school', $glss_subj[glss_i]

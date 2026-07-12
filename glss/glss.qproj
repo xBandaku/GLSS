@@ -6,7 +6,6 @@
 			<Location name="mod_glss"/>
 			<Location name="mod_glss_options"/>
 			<Location name="mod_glss_readme"/>
-			<Location name="mod_glss_saveupdater"/>
 		</Folder>
 		<Folder name="content">
 			<Location name="mod_glss_functions"/>

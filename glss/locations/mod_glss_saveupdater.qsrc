@@ -1,9 +1,0 @@
-# mod_glss_saveupdater
-!! Called by mod_system on every save load, after the core saveupdater.
-!! Bump glss['version'] and add variable migrations here when they change.
-
-if glss['version'] < 100:
-	glss['version'] = 100
-end
-
---- mod_glss_saveupdater ---------------------------------

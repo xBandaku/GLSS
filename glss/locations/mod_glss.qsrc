@@ -1,41 +1,42 @@
 # mod_glss
 !! GLSS main dispatcher.
 !! mod_system calls this location on every location change (via LOCA) and
-!! from the sleep trigger hooks. It must stay fast and print nothing.
+!! from the sleep trigger hooks. Nested so it costs a single check when
+!! both features are disabled, and it must print nothing.
 
-!! Shared gate: schoolgirl start, still enrolled, not expelled, term time, school day.
-glss_temp_school_day = 0
-if $start_type['loc'] = 'sg' and gschoolVars['school_diploma'] = 0 and gschoolVars['block'] = 0 and kanikuli = 0 and week < 6: glss_temp_school_day = 1
+if glss['ghost_school'] = 1 or glss['auto_school'] = 1:
+	!! Shared gate: schoolgirl start, still enrolled, not expelled, term time, school day.
+	if $start_type['loc'] = 'sg' and gschoolVars['school_diploma'] = 0 and gschoolVars['block'] = 0 and kanikuli = 0 and week < 6:
+		!! -------------------------------------------------------------
+		!! Ghost attendance
+		!! Once the school day has started (8:00), silently credit
+		!! attendance and average grades for today, wherever the player
+		!! is. Mirrors the credit block at the top of gschool_lessons
+		!! 'morning'. The hourly absence tick in hourly_events adds +1
+		!! every school day and real attendance takes it back with -1;
+		!! the ghost credit does the same, so absences net to zero.
+		!! -------------------------------------------------------------
+		if glss['ghost_school'] = 1 and hour >= 8 and gschoolVars['last_attendance'] ! daystart and glss['ghost_day'] ! daystart:
+			glss['ghost_day'] = daystart
+			gs 'mod_glss_functions', 'ghost_credit'
+		end
 
-!! ---------------------------------------------------------------------
-!! Ghost attendance
-!! Once the school day has started (8:00), silently credit attendance and
-!! average grades for today, wherever the player is. Mirrors the credit
-!! block at the top of gschool_lessons 'morning'. The hourly absence tick
-!! in hourly_events adds +1 every school day and real attendance takes it
-!! back with -1; the ghost credit does the same, so absences net to zero.
-!! ---------------------------------------------------------------------
-if glss['ghost_school'] = 1 and glss_temp_school_day = 1 and hour >= 8 and gschoolVars['last_attendance'] ! daystart and glss['ghost_day'] ! daystart:
-	glss['ghost_day'] = daystart
-	gs 'mod_glss_functions', 'ghost_credit'
-end
-
-!! ---------------------------------------------------------------------
-!! One-click school day
-!! Appends an action to the school hallway screens. Gated on the regular
-!! hallway actions being present, so special morning scenes (principal
-!! summons, grade check, game night invite, cheerleading) are never
-!! bypassed.
-!! ---------------------------------------------------------------------
-if glss['auto_school'] = 1 and glss_temp_school_day = 1 and $curloc = 'gschool_lessons' and hour < 14:
-	if instr($curacts, 'Go to first period') > 0:
-		!! Morning hallway: start from period 0, like the vanilla 'Go to first period' action does.
-		act 'GLSS: Attend the whole school day automatically': school_period = 0 & gt 'mod_glss_functions', 'auto_day'
-	elseif instr($curacts, 'Go to next class') > 0:
-		act 'GLSS: Attend the rest of the school day automatically': gt 'mod_glss_functions', 'auto_day'
+		!! -------------------------------------------------------------
+		!! One-click school day
+		!! Appends an action to the school hallway screens. Gated on the
+		!! regular hallway actions being present, so special morning
+		!! scenes (principal summons, grade check, game night invite,
+		!! cheerleading) are never bypassed.
+		!! -------------------------------------------------------------
+		if glss['auto_school'] = 1 and $curloc = 'gschool_lessons' and hour < 14:
+			if instr($curacts, 'Go to first period') > 0:
+				!! Morning hallway: start from period 0, like the vanilla 'Go to first period' action does.
+				act 'GLSS: Attend the whole school day automatically': school_period = 0 & gt 'mod_glss_functions', 'auto_day'
+			elseif instr($curacts, 'Go to next class') > 0:
+				act 'GLSS: Attend the rest of the school day automatically': gt 'mod_glss_functions', 'auto_day'
+			end
+		end
 	end
 end
-
-killvar 'glss_temp_school_day'
 
 --- mod_glss ---------------------------------
