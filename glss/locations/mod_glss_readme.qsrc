@@ -11,6 +11,9 @@
 '<b>Ghost attendance</b>'
 'School simply happens without you. On every school day, from 8:00 onwards, attendance and average grades are credited automatically no matter where you are. No absences accrue, your mother will not confront you, and truancy can no longer get you expelled.'
 *nl
+'<b>Auto-lunch</b>'
+'Optional, for automated days: Sveta eats a bagged lunch from home if available, otherwise buys cafeteria food (50 RUB) if she can afford it, otherwise goes without. Off by default so diets and budgets stay under your control.'
+*nl
 '<b>What automation does not do</b>'
 'Automated school days skip the school''s social life: friendships, gossip, cheerleading, random classroom events and detention do not progress. Playing the lessons yourself remains slightly better for grades. Special morning scenes (a principal summons, grade postings, invitations) still play out normally when you show up in person.'
 

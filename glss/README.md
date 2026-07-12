@@ -4,6 +4,7 @@ A mod for Girl Life (English Community Version) that makes the Pavlovsk school r
 
 - **One-click school day** — a new hallway action, *"GLSS: Attend the rest of the school day automatically"*, sits Sveta through every remaining lesson with average participation and jumps the clock to the end of the school day (14:00). Attendance, homework, and grade gains are all credited. Available in the morning hallway and between classes.
 - **Ghost attendance** — school happens without you. On every school day from 8:00, attendance and average grades are credited automatically no matter where Sveta is. No absences accrue, the mother confrontation ladder never fires, and truancy can no longer get you expelled.
+- **Auto-lunch** — on automated days Sveta eats a bagged lunch from home when available, otherwise buys cafeteria food (50 ₽) when affordable, otherwise skips. Uses the game's silent `_stats` food handlers and the same money API as the real cafeteria. Off by default.
 
 ## Design notes
 

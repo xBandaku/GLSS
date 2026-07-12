@@ -16,6 +16,9 @@ A new action in the school hallway — *"GLSS: Attend the whole/rest of the scho
 ### Ghost attendance
 School simply happens without you. On every school day from 8:00, attendance and average grades are credited automatically no matter where Sveta is. No absences accrue, her mother never confronts her, and truancy can no longer get her expelled.
 
+### Auto-lunch (optional)
+On automated school days, Sveta feeds herself: a bagged lunch from home if she lives at her parents' place, otherwise cafeteria food (50 ₽) if she can afford it, otherwise she goes without. Off by default so diets and budgets stay in your hands.
+
 ### What the mod deliberately does *not* do
 - Automated days use average participation — playing lessons yourself remains slightly better for grades.
 - The school's social life (friendships, gossip, cheerleading, classroom events) only progresses when you attend in person.

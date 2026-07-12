@@ -10,7 +10,7 @@ if glss['auto_school'] = 1:
 else
 	'<b>One-click school day:</b> <a href="exec: glss[''auto_school''] = 1 & gs ''mod_glss_options''">Disabled</a> (click to enable)'
 end
-'Adds a "GLSS: Attend the rest of the school day automatically" action to the school hallway in the morning and between classes. Sveta sits through every remaining lesson with average participation and the clock jumps to the end of the school day (14:00). Lunch is not eaten automatically.'
+'Adds a "GLSS: Attend the rest of the school day automatically" action to the school hallway in the morning and between classes. Sveta sits through every remaining lesson with average participation and the clock jumps to the end of the school day (14:00). Lunch follows the auto-lunch setting below.'
 *nl
 if glss['ghost_school'] = 1:
 	'<b>Ghost attendance:</b> <a href="exec: glss[''ghost_school''] = 0 & gs ''mod_glss_options''">Enabled</a> (click to disable)'
@@ -18,6 +18,13 @@ else
 	'<b>Ghost attendance:</b> <a href="exec: glss[''ghost_school''] = 1 & gs ''mod_glss_options''">Disabled</a> (click to enable)'
 end
 'School happens without you. On every school day from 8:00, attendance and average grades are credited automatically wherever you are, and you are free to spend the day as you wish. No absences accrue, your mother never confronts you about truancy, and you cannot be expelled for skipping.'
+*nl
+if glss['auto_lunch'] = 1:
+	'<b>Auto-lunch on automated days:</b> <a href="exec: glss[''auto_lunch''] = 0 & gs ''mod_glss_options''">Enabled</a> (click to disable)'
+else
+	'<b>Auto-lunch on automated days:</b> <a href="exec: glss[''auto_lunch''] = 1 & gs ''mod_glss_options''">Disabled</a> (click to enable)'
+end
+'On automated school days (one-click or ghost), Sveta eats lunch on her own: a bagged lunch from home if she lives at her parents'' place, otherwise cafeteria food for 50 RUB if she can afford it, otherwise she goes without. Same food and money effects as picking those options in the cafeteria yourself. Leave this off if you are managing her diet or money closely.'
 *nl
 '<i>Notes: automated days use average participation, so playing lessons yourself is still slightly better for grades. Automated attendance skips the school''s social life: friendships, gossip, cheerleading and classroom events do not progress on automated days. If ghost attendance already credited today and you attend lessons in person anyway, that day''s lesson grades can count twice.</i>'
 

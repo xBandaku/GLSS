@@ -21,6 +21,34 @@ if $ARGS[0] = 'ghost_credit':
 	lernSkill += 1
 	lernHome += 1
 	gs 'mod_glss_functions', 'day_grades', 0
+	gs 'mod_glss_functions', 'auto_lunch'
+	killvar 'glss_temp_lunch'
+	exit
+end
+
+
+!! ---------------------------------------------------------------------
+!! auto_lunch
+!! Smart lunch policy for automated school days, mirroring the choices
+!! in gschool_lunch 'cafeteria': bagged lunch from home when living at
+!! the parents home, otherwise buy cafeteria food (50 RUB) when she
+!! can afford it, otherwise go hungry. Uses the silent _stats food
+!! handlers so it is safe to run from the dispatcher. Reports what
+!! happened in glss_temp_lunch (0 = nothing, 1 = bagged, 2 = bought);
+!! the caller owns killvar of that variable.
+!! ---------------------------------------------------------------------
+if $ARGS[0] = 'auto_lunch':
+	glss_temp_lunch = 0
+	if glss['auto_lunch'] = 1:
+		if func('homes_properties', 'has_access', 'parents_home'):
+			gs 'food', 'bagged_lunch_stats'
+			glss_temp_lunch = 1
+		elseif func('money', 'can_afford', 50) = 1:
+			gs 'money', 'pay', 50
+			gs 'food', 'medium_meal_stats'
+			glss_temp_lunch = 2
+		end
+	end
 	exit
 end
 
@@ -43,6 +71,10 @@ if $ARGS[0] = 'auto_day':
 
 	gs 'mod_glss_functions', 'day_grades', school_period
 
+	!! Lunch is period 5; only auto-eat if it is still ahead of us.
+	glss_temp_lunch = -1
+	if school_period <= 5: gs 'mod_glss_functions', 'auto_lunch'
+
 	if hour*60 + minut < 14*60: minut += 14*60 - (hour*60 + minut)
 	school_period = 0
 	gs 'stat'
@@ -50,7 +82,14 @@ if $ARGS[0] = 'auto_day':
 	$func('wrap', 'header center b', 'School')
 	'<center><img <<$set_imgh>> src="images/locations/pavlovsk/school/building/gschool_hall0<<rand(0,2)>>.jpg"></center>'
 	'You put your head down and let the school day carry you along: lessons, breaks and hallway chatter blur together until the final bell rings.'
-	'<i>You didn''t stop for lunch, so grab something to eat if you''re hungry.</i>'
+	if glss_temp_lunch = 1:
+		'<i>You ate the bagged lunch from home during the midday break.</i>'
+	elseif glss_temp_lunch = 2:
+		'<i>You bought lunch at the cafeteria for <<$func(''money'', ''string_price'', 50)>> during the midday break.</i>'
+	elseif glss_temp_lunch = 0:
+		'<i>You didn''t stop for lunch, so grab something to eat if you''re hungry.</i>'
+	end
+	killvar 'glss_temp_lunch'
 
 	act 'Head out to the school grounds': gt 'gschool_grounds', 'main'
 	exit
