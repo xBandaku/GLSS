@@ -1,6 +1,12 @@
-# Girl Life School Skip (GLSS)
+<div align="center">
+  
+# Girl-Life-School-Skip
 
-[![Latest release](https://img.shields.io/github/v/release/xBandaku/Girl-Life-School-Skip)](https://github.com/xBandaku/Girl-Life-School-Skip/releases/latest)
+[![Version](https://img.shields.io/github/v/release/xBandaku/Girl-Life-School-Skip?color=%230567ff&label=Latest%20Release&style=for-the-badge)](https://github.com/xBandaku/YACFRTGE/releases/latest)
+![Downloads](https://img.shields.io/github/downloads/xBandaku/Girl-Life-School-Skip/total?label=Total%20Downloads&style=for-the-badge)
+[![License](https://img.shields.io/github/license/xBandaku/Girl-Life-School-Skip?style=for-the-badge)](LICENSE)
+
+</div>
 
 A mod for **[Girl Life — English Community Version](https://gitlab.com/kevinsmartstfg/girl-life)** (an adult 18+ life-sim game for the QSP engine) that makes the Pavlovsk school routine optional, so your mornings are yours again.
 
