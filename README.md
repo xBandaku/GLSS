@@ -2,7 +2,7 @@
   
 # Girl-Life-School-Skip
 
-[![Version](https://img.shields.io/github/v/release/xBandaku/Girl-Life-School-Skip?color=%230567ff&label=Latest%20Release&style=for-the-badge)](https://github.com/xBandaku/YACFRTGE/releases/latest)
+[![Version](https://img.shields.io/github/v/release/xBandaku/Girl-Life-School-Skip?color=%230567ff&label=Latest%20Release&style=for-the-badge)](https://github.com/xBandaku/Girl-Life-School-Skip/releases/latest)
 ![Downloads](https://img.shields.io/github/downloads/xBandaku/Girl-Life-School-Skip/total?label=Total%20Downloads&style=for-the-badge)
 [![License](https://img.shields.io/github/license/xBandaku/Girl-Life-School-Skip?style=for-the-badge)](LICENSE)
 
