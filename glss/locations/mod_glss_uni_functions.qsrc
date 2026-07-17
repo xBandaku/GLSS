@@ -1,0 +1,404 @@
+# mod_glss_uni_functions
+!! GLSS university automation: graded core (lectures + exams). See mod_glss
+!! for how these get triggered. Electives are handled separately in
+!! mod_glss_uni_electives_functions - they carry no grade weight in the real
+!! game, so they are gated behind their own toggle.
+!!
+!! Design mirrors the school day_grades function in mod_glss_functions: these are silent
+!! credit calls only, never visiting the real uni_lessons/uni_exams screens,
+!! so ghost mode is safe to run from the dispatcher. Every attend_class /
+!! class_activity_attributes call replicates the exact institution/subject/
+!! stat the matching handler in uni_lessons1-4.qsrc makes - including a
+!! handful of upstream teaching_studies bugs (wrong subject string on some
+!! "ask a question" calls, pcs_intel used twice instead of pcs_intel then
+!! pcs_chrsm) - so automated grades never diverge from a manual playthrough.
+!! Nursing has no such bugs. Semesters 5-8 have no lecture data in the base
+!! game, so the lookups below simply resolve nothing for them.
+!!
+!! Both credit_period and credit_exam reuse uni_period[...], the same flag
+!! the vanilla game uses to track attendance for the day - so crediting a period
+!! here also stops the vanilla "Go to your X class" action from re-offering
+!! it, and a period the player already attended manually is never re-credited.
+
+!! ---------------------------------------------------------------------
+!! credit_period
+!! Silently credits one lecture period for today (ARGS[1] = 'first'/
+!! 'second'/'third') if a real, non-elective lecture exists for the current
+!! program/semester/weekday/period and it has not already been credited
+!! today. Third period only ever resolves on Wednesday (week = 3) - the
+!! Monday/Tuesday/Thursday third-period slots are elective-only.
+!! ---------------------------------------------------------------------
+if $ARGS[0] = 'credit_period':
+	if uni_period[$ARGS[1]] = daystart: exit
+	if university['enrolled_in_semester'] < 1 or university['enrolled_in_semester'] > 4: exit
+	if week > 4: exit
+
+	killvar '$glss_us'
+	glss_sem = university['enrolled_in_semester']
+
+	if $university['enrolled_in'] = 'nursing':
+		if $ARGS[1] = 'first':
+			if glss_sem = 1:
+				if week = 1 or week = 4:
+					$glss_us = 'patient care 101'
+				elseif week = 2:
+					$glss_us = 'anatomy and physiology 101'
+				elseif week = 3:
+					$glss_us = 'examination and treatment 101'
+				end
+			elseif glss_sem = 2:
+				if week = 1 or week = 4:
+					$glss_us = 'patient care 102'
+				elseif week = 2:
+					$glss_us = 'anatomy and physiology 102'
+				elseif week = 3:
+					$glss_us = 'examination and treatment 102'
+				end
+			elseif glss_sem = 3:
+				if week = 1 or week = 4:
+					$glss_us = 'patient care 201'
+				elseif week = 2:
+					$glss_us = 'anatomy and physiology 201'
+				elseif week = 3:
+					$glss_us = 'dosages and pharmaceuticals 101'
+				end
+			elseif glss_sem = 4:
+				if week = 1 or week = 4:
+					$glss_us = 'patient care 202'
+				elseif week = 2:
+					$glss_us = 'anatomy and physiology 202'
+				elseif week = 3:
+					$glss_us = 'dosages and pharmaceuticals 102'
+				end
+			end
+		elseif $ARGS[1] = 'second':
+			if glss_sem = 1:
+				if week = 1 or week = 4:
+					$glss_us = 'anatomy and physiology 101'
+				elseif week = 2 or week = 3:
+					$glss_us = 'patient care 101'
+				end
+			elseif glss_sem = 2:
+				if week = 1 or week = 4:
+					$glss_us = 'anatomy and physiology 102'
+				elseif week = 2 or week = 3:
+					$glss_us = 'patient care 102'
+				end
+			elseif glss_sem = 3:
+				if week = 1 or week = 4:
+					$glss_us = 'anatomy and physiology 201'
+				elseif week = 2 or week = 3:
+					$glss_us = 'patient care 201'
+				end
+			elseif glss_sem = 4:
+				if week = 1 or week = 4:
+					$glss_us = 'anatomy and physiology 202'
+				elseif week = 2 or week = 3:
+					$glss_us = 'patient care 202'
+				end
+			end
+		elseif $ARGS[1] = 'third' and week = 3:
+			if glss_sem = 1:
+				$glss_us = 'anatomy and physiology 101'
+			elseif glss_sem = 2:
+				$glss_us = 'anatomy and physiology 102'
+			elseif glss_sem = 3:
+				$glss_us = 'anatomy and physiology 201'
+			elseif glss_sem = 4:
+				$glss_us = 'anatomy and physiology 202'
+			end
+		end
+	elseif $university['enrolled_in'] = 'teaching_studies':
+		if $ARGS[1] = 'first':
+			if glss_sem = 1:
+				if week = 4:
+					$glss_us = 'teaching methods 101'
+				else
+					$glss_us = 'general education 101'
+				end
+			elseif glss_sem = 2:
+				if week = 4:
+					$glss_us = 'teaching methods 102'
+				else
+					$glss_us = 'general education 102'
+				end
+			elseif glss_sem = 3:
+				if week = 4:
+					$glss_us = 'assessment 201'
+				else
+					$glss_us = 'general education 201'
+				end
+			elseif glss_sem = 4:
+				if week = 4:
+					$glss_us = 'learning theories 202'
+				else
+					$glss_us = 'general education 202'
+				end
+			end
+		elseif $ARGS[1] = 'second':
+			if glss_sem = 1:
+				if week = 1 or week = 3:
+					$glss_us = 'teaching methods 101'
+				elseif week = 2 or week = 4:
+					$glss_us = 'learning theories 101'
+				end
+			elseif glss_sem = 2:
+				if week = 1 or week = 3:
+					$glss_us = 'teaching methods 102'
+				elseif week = 2 or week = 4:
+					$glss_us = 'psychology of a student 101'
+				end
+			elseif glss_sem = 3:
+				if week = 1 or week = 3:
+					$glss_us = 'assessment 201'
+				elseif week = 2 or week = 4:
+					$glss_us = 'learning theories 201'
+				end
+			elseif glss_sem = 4:
+				if week = 1 or week = 3:
+					$glss_us = 'learning theories 202'
+				elseif week = 2 or week = 4:
+					$glss_us = 'psychology of a student 201'
+				end
+			end
+		elseif $ARGS[1] = 'third' and week = 3:
+			if glss_sem = 1:
+				$glss_us = 'learning theories 101'
+			elseif glss_sem = 2:
+				$glss_us = 'psychology of a student 101'
+			elseif glss_sem = 3:
+				$glss_us = 'learning theories 201'
+			elseif glss_sem = 4:
+				$glss_us = 'psychology of a student 201'
+			end
+		end
+	end
+
+	if $glss_us ! '':
+		uni_period[$ARGS[1]] = daystart
+		$glss_ui = 'uni_<<$university[''enrolled_in'']>>_semester_<<glss_sem>>'
+
+		!! Second class_activity_attributes call: standard is (same subject,
+		!! charisma), mirroring the real "ask a question" bonus. A set of
+		!! teaching_studies subjects have an upstream bug where that bonus
+		!! re-uses pcs_intel instead of pcs_chrsm; two of those also use the
+		!! wrong subject string. Replicated verbatim - see file header.
+		$glss_us2 = $glss_us
+		glss_stat2 = pcs_chrsm
+		if $university['enrolled_in'] = 'teaching_studies':
+			if $glss_us = 'teaching methods 102':
+				$glss_us2 = 'teaching methods'
+				glss_stat2 = pcs_intel
+			elseif $glss_us = 'learning theories 202':
+				$glss_us2 = 'assessment 202'
+				glss_stat2 = pcs_intel
+			elseif $glss_us = 'teaching methods 101' or $glss_us = 'learning theories 101' or $glss_us = 'psychology of a student 101' or $glss_us = 'assessment 201' or $glss_us = 'learning theories 201' or $glss_us = 'psychology of a student 201':
+				glss_stat2 = pcs_intel
+			end
+		end
+
+		gs 'grades', 'attend_class', $glss_ui, $glss_us
+		gs 'grades', 'class_activity_attributes', $glss_ui, $glss_us, pcs_intel
+		gs 'grades', 'class_activity_attributes', $glss_ui, $glss_us2, glss_stat2
+	end
+
+	killvar '$glss_us'
+	killvar '$glss_us2'
+	killvar '$glss_ui'
+	killvar 'glss_sem'
+	killvar 'glss_stat2'
+	exit
+end
+
+
+!! ---------------------------------------------------------------------
+!! credit_exam
+!! Silently completes the exam due today, if any (mirrors the trigger
+!! conditions in uni_programs set_exam_act_nursing/set_exam_act_teaching
+!! exactly) and it has not already been completed today. The grade itself was
+!! already accumulated via calculate_grade during the semester; this only
+!! sets the "_exam_done" flag the semester-end pass/fail loop checks, which
+!! is what actually prevents expulsion for a missed exam.
+!! ---------------------------------------------------------------------
+if $ARGS[0] = 'credit_exam':
+	if uni_period['exam'] = daystart: exit
+	if university['exam_week'] = 0: exit
+	if university['enrolled_in_semester'] < 1 or university['enrolled_in_semester'] > 4: exit
+
+	killvar '$glss_us'
+	glss_sem = university['enrolled_in_semester']
+
+	if $university['enrolled_in'] = 'nursing':
+		if glss_sem = 1:
+			if university['exam_week'] = 1 and week = 4:
+				$glss_us = 'patient care 101'
+			elseif university['exam_week'] = 2 and week = 2:
+				$glss_us = 'anatomy and physiology 101'
+			elseif university['exam_week'] = 2 and week = 4:
+				$glss_us = 'examination and treatment 101'
+			end
+		elseif glss_sem = 2:
+			if university['exam_week'] = 1 and week = 4:
+				$glss_us = 'patient care 102'
+			elseif university['exam_week'] = 2 and week = 2:
+				$glss_us = 'anatomy and physiology 102'
+			elseif university['exam_week'] = 2 and week = 4:
+				$glss_us = 'examination and treatment 102'
+			end
+		elseif glss_sem = 3:
+			if university['exam_week'] = 1 and week = 4:
+				$glss_us = 'patient care 201'
+			elseif university['exam_week'] = 2 and week = 2:
+				$glss_us = 'anatomy and physiology 201'
+			elseif university['exam_week'] = 2 and week = 4:
+				$glss_us = 'dosages and pharmaceuticals 101'
+			end
+		elseif glss_sem = 4:
+			if university['exam_week'] = 1 and week = 4:
+				$glss_us = 'patient care 202'
+			elseif university['exam_week'] = 2 and week = 2:
+				$glss_us = 'anatomy and physiology 202'
+			elseif university['exam_week'] = 2 and week = 4:
+				$glss_us = 'dosages and pharmaceuticals 102'
+			end
+		end
+	elseif $university['enrolled_in'] = 'teaching_studies':
+		if glss_sem = 1:
+			if university['exam_week'] = 1 and week = 4:
+				$glss_us = 'general education 101'
+			elseif university['exam_week'] = 2 and week = 2:
+				$glss_us = 'teaching methods 101'
+			elseif university['exam_week'] = 2 and week = 4:
+				$glss_us = 'learning theories 101'
+			end
+		elseif glss_sem = 2:
+			if university['exam_week'] = 1 and week = 4:
+				$glss_us = 'general education 102'
+			elseif university['exam_week'] = 2 and week = 2:
+				$glss_us = 'teaching methods 102'
+			elseif university['exam_week'] = 2 and week = 4:
+				$glss_us = 'psychology of a student 101'
+			end
+		elseif glss_sem = 3:
+			if university['exam_week'] = 1 and week = 4:
+				$glss_us = 'general education 201'
+			elseif university['exam_week'] = 2 and week = 2:
+				$glss_us = 'assessment 201'
+			elseif university['exam_week'] = 2 and week = 4:
+				$glss_us = 'learning theories 201'
+			end
+		elseif glss_sem = 4:
+			if university['exam_week'] = 1 and week = 4:
+				$glss_us = 'general education 202'
+			elseif university['exam_week'] = 2 and week = 2:
+				$glss_us = 'learning theories 202'
+			elseif university['exam_week'] = 2 and week = 4:
+				$glss_us = 'psychology of a student 201'
+			end
+		end
+	end
+
+	if $glss_us ! '':
+		uni_period['exam'] = daystart
+		$glss_ui = 'uni_<<$university[''enrolled_in'']>>_semester_<<glss_sem>>'
+		class['<<$glss_ui>>_<<$glss_us>>_exam_done'] = 1
+		gs 'grades', 'assign_grade_description', $glss_ui
+	end
+
+	killvar '$glss_us'
+	killvar '$glss_ui'
+	killvar 'glss_sem'
+	exit
+end
+
+
+!! ---------------------------------------------------------------------
+!! ghost_credit
+!! Background credit for lectures and exam due today, wherever the
+!! player is. Runs from the dispatcher, so it must not print or change
+!! the screen. Zero time cost, same as the school ghost_credit - attendance
+!! happens in the background while the player spends the day elsewhere.
+!! ---------------------------------------------------------------------
+if $ARGS[0] = 'ghost_credit':
+	if university['semester_week'] > 0:
+		gs 'mod_glss_uni_functions', 'credit_period', 'first'
+		gs 'mod_glss_uni_functions', 'credit_period', 'second'
+		gs 'mod_glss_uni_functions', 'credit_period', 'third'
+	end
+	if university['exam_week'] > 0: gs 'mod_glss_uni_functions', 'credit_exam'
+	if glss['uni_electives'] = 1: gs 'mod_glss_uni_electives_functions', 'ghost_credit'
+	exit
+end
+
+
+!! ---------------------------------------------------------------------
+!! auto_uni_day
+!! One-click university day, started from the campus/hallway action
+!! injected by mod_glss. Credits whichever lecture periods and exam are
+!! still due today and advances the clock using the same per-period
+!! formulas the real class actions use (including the nursing-semester-4
+!! second-period exception), landing at a realistic end-of-day time
+!! instead of a single hardcoded jump.
+!! ---------------------------------------------------------------------
+if $ARGS[0] = 'auto_uni_day':
+	*clr & cla
+	$menu_loc = 'uni_grounds'
+	$menu_arg = 'main'
+	$location_type = 'public_outdoors'
+	menu_off = 0
+
+	glss_did_something = 0
+
+	if university['semester_week'] > 0:
+		if uni_period['first'] ! daystart:
+			minut += max(0, (9 - hour)*60 - minut)
+			gs 'time'
+			gs 'mod_glss_uni_functions', 'credit_period', 'first'
+			if uni_period['first'] = daystart: glss_did_something = 1
+		end
+		if uni_period['second'] ! daystart:
+			!! The gs time calls surrounding this block keep hour normalized,
+			!! so this literal check behaves the same as it does in vanilla play.
+			if $university['enrolled_in'] = 'nursing' and university['enrolled_in_semester'] = 4:
+				if hour = 10: minut += 60 - minut
+			else
+				minut += max(0, (11 - hour)*60 - minut)
+			end
+			gs 'time'
+			gs 'mod_glss_uni_functions', 'credit_period', 'second'
+			if uni_period['second'] = daystart: glss_did_something = 1
+		end
+		if uni_period['third'] ! daystart and week = 3:
+			minut += max(0, (13 - hour) * 60 + (15 - minut))
+			gs 'time'
+			gs 'mod_glss_uni_functions', 'credit_period', 'third'
+			if uni_period['third'] = daystart: glss_did_something = 1
+		end
+	end
+	if university['exam_week'] > 0 and uni_period['exam'] ! daystart:
+		minut += max(0, (9 - hour)*60 - minut)
+		gs 'time'
+		gs 'mod_glss_uni_functions', 'credit_exam'
+		if uni_period['exam'] = daystart:
+			minut += 180
+			gs 'time'
+			glss_did_something = 1
+		end
+	end
+	if glss['uni_electives'] = 1: gs 'mod_glss_uni_electives_functions', 'auto_day'
+
+	gs 'stat'
+	$func('wrap', 'header center b', 'University')
+	'<center><img <<$set_imgh>> src="images/locations/city/island/university/uni_day.jpg"></center>'
+	if glss_did_something = 1:
+		'You put your head down and let the rest of your university day carry you along: lectures and campus chatter blur together until you find yourself back on the quad.'
+	else
+		'There was nothing left on your schedule for today.'
+	end
+	killvar 'glss_did_something'
+
+	act 'Head back to the university plaza': gt 'uni_grounds'
+	exit
+end
+
+--- mod_glss_uni_functions ---------------------------------

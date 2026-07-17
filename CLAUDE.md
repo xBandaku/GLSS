@@ -104,9 +104,14 @@ listing only the tests you want. The framework sets `_ISTEST = 1`.
 
 ## Active Migration Work
 
-`docs/comprehensive_integration_master_plan.md` is the master document tracking the
-ongoing migration of legacy job systems to Jobs v4 and calendar integration: which
-jobs are done, the recommended migration order for the remainder, which get thin
-wrappers only, and which should not be migrated. Consult it before touching any
-employment- or schedule-related code. `docs/calendar_events_integration_summary.md`
-tracks which recurring events are already in `calendar_list.qsrc`.
+Upstream removed its `docs/comprehensive_integration_master_plan.md` and
+`docs/calendar_events_integration_summary.md` (deleted in
+`reference/nightly` commit `46db75fe6`, 2026-07-14) — the `docs/` directory no
+longer exists there, so treat any prior notes citing those files as stale.
+There is no replacement master-plan doc as of this writing; before touching
+employment- or schedule-related code, instead check job-by-job state directly:
+`jobs.qsrc`'s header comment is the current Jobs v4 API reference, `jobs_list.qsrc`
+shows which jobs are already defined via the v4 config format, and
+`calendar_list.qsrc` shows which recurring events already exist. Grep the
+job's own `.qsrc` file for calls into `jobs.qsrc` (`gs 'jobs', 'set_employed'`,
+etc.) to tell whether it has been migrated yet.

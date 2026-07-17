@@ -9,6 +9,8 @@
 		</Folder>
 		<Folder name="content">
 			<Location name="mod_glss_functions"/>
+			<Location name="mod_glss_uni_functions"/>
+			<Location name="mod_glss_uni_electives_functions"/>
 		</Folder>
 	</Structure>
 </QGen-project>
