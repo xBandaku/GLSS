@@ -1,0 +1,125 @@
+# mod_glss_uni_electives_functions
+!! GLSS elective automation - optional, separate toggle (glss['uni_electives']).
+!! Electives (Computers, Art, Psychology, African/Asian Studies) carry zero
+!! grade weight in the live game: every attend_class/class_activity_attributes
+!! call in the real elective lesson files is commented out, there is no exam,
+!! and attending has no effect on passing or expulsion. This only replicates
+!! the minor exp_gain reward the real "Listen attentively" branch grants, and
+!! only that base branch - the "ask a question" bonus and "talk to a
+!! classmate" NPC/relationship branches are deliberately never touched, same
+!! as GLSS never touches the social layer at school.
+!!
+!! Reuses uni_period['third'], the same flag both the vanilla game and
+!! mod_glss_uni_functions use to track third-period attendance for the day,
+!! so this never fires on Wednesday (the graded core lecture) or on a day
+!! already credited by any of the three paths (ghost, one-click, manual play).
+
+!! ---------------------------------------------------------------------
+!! credit_elective
+!! Silently credits the elective period due today if the player is enrolled
+!! in one for that weekday slot. Always grants the small entry-level
+!! exp_gain every real elective handler gives unconditionally; for the four
+!! tracks gated behind a willpower cost in the real game (everything except
+!! Art), additionally grants the "listen attentively" reward only if
+!! affordable, and pays the cost - same as auto_lunch pays real money rather
+!! than giving food for free.
+!! ---------------------------------------------------------------------
+if $ARGS[0] = 'credit_elective':
+	if uni_period['third'] = daystart: exit
+	if university['enrolled_in_semester'] < 1 or university['enrolled_in_semester'] > 4: exit
+	if week ! 1 and week ! 2 and week ! 4: exit
+
+	if week = 1:
+		glss_slot = 1
+	elseif week = 2:
+		glss_slot = 2
+	elseif week = 4:
+		glss_slot = 3
+	end
+	$glss_elective = $university['elective_semester_<<university[''enrolled_in_semester'']>>_<<glss_slot>>']
+	killvar 'glss_slot'
+
+	if $glss_elective = '':
+		killvar '$glss_elective'
+		exit
+	end
+
+	uni_period['third'] = daystart
+
+	if $glss_elective = 'Art 101' or $glss_elective = 'Art 102':
+		gs 'exp_gain', 'agil', rand(0, 1)
+		gs 'exp_gain', 'artskls', rand(0, 1)
+	else
+		gs 'exp_gain', 'intel', rand(0, 1), 'no_bonus'
+
+		gs 'willpower', 'chore', 'self', iif(grupTipe = 4 and trait_vars['academic'] = 0, 'hard', iif(trait_vars['academic'] > 0, 'easy', 'medium'))
+		if trait_vars['academic'] = 2:
+			will_cost = will_cost / 2
+		elseif trait_vars['academic'] >= 3:
+			will_cost = 0
+		end
+
+		if pcs_willpwr >= will_cost:
+			if will_cost > 0: gs 'willpower', 'pay', 'self', 'chore'
+			trait_vars['academic_lessons'] += 1
+
+			if $glss_elective = 'Computers 101' or $glss_elective = 'Computers 102':
+				gs 'exp_gain', 'compskl', rand(0, 1)
+			elseif $glss_elective = 'Psychology 101' or $glss_elective = 'Psychology 102':
+				gs 'exp_gain', 'humint', rand(0, 1)
+			elseif $glss_elective = 'Asian Studies 101':
+				if rand(0, 1) = 1:
+					gs 'exp_gain', 'prcptn', rand(0, 1)
+				else
+					gs 'exp_gain', 'humint', rand(0, 1)
+				end
+			elseif $glss_elective = 'Asian Studies 102':
+				!! Upstream bug: the real 102 handler grants compskl, not
+				!! prcptn/humint like 101 - replicated verbatim.
+				gs 'exp_gain', 'compskl', rand(0, 1)
+			elseif $glss_elective = 'African Studies 101':
+				if rand(0, 1) = 1:
+					gs 'exp_gain', 'prcptn', rand(0, 1)
+				else
+					gs 'exp_gain', 'humint', rand(0, 1)
+				end
+			elseif $glss_elective = 'African Studies 102':
+				!! Same upstream bug as Asian Studies 102 - replicated verbatim.
+				gs 'exp_gain', 'compskl', rand(0, 1)
+			end
+		end
+	end
+
+	killvar '$glss_elective'
+	exit
+end
+
+
+!! ---------------------------------------------------------------------
+!! ghost_credit
+!! Called from the ghost_credit function in mod_glss_uni_functions when the
+!! elective toggle is on, after the graded core has already been credited
+!! for today.
+!! ---------------------------------------------------------------------
+if $ARGS[0] = 'ghost_credit':
+	gs 'mod_glss_uni_electives_functions', 'credit_elective'
+	exit
+end
+
+
+!! ---------------------------------------------------------------------
+!! auto_day
+!! Called from the auto_uni_day function in mod_glss_uni_functions when
+!! the elective toggle is on, after the graded core has already been
+!! processed for today. Advances the clock the same ~90 minutes the real
+!! third-period act does, only if there is actually an elective due.
+!! ---------------------------------------------------------------------
+if $ARGS[0] = 'auto_day':
+	if uni_period['third'] = daystart: exit
+	if week ! 1 and week ! 2 and week ! 4: exit
+	minut += max(0, (13 - hour) * 60 + (15 - minut))
+	gs 'mod_glss_uni_electives_functions', 'credit_elective'
+	exit
+end
+
+--- mod_glss_uni_electives_functions ---------------------------------

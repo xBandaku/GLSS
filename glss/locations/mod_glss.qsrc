@@ -39,4 +39,36 @@ if glss['ghost_school'] = 1 or glss['auto_school'] = 1:
 	end
 end
 
+if glss['ghost_uni'] = 1 or glss['auto_uni'] = 1:
+	!! Shared gate: currently enrolled, semester in progress, weekday. Mirrors
+	!! the exact condition uni_grounds itself uses to decide whether to offer
+	!! any class/exam action at all.
+	if university['student'] = 1 and university['enrolled_in_semester'] > university['semester_passed'] and week < 5:
+		!! -------------------------------------------------------------
+		!! Ghost attendance
+		!! Once the day has started, silently credit whatever lectures
+		!! and exam are due today, wherever the player is. Also silently
+		!! completes electives when that toggle is on. Delivers the same
+		!! "never expelled for skipping" guarantee as ghost_school, but
+		!! via exams (the actual pass/fail gate at university) rather than
+		!! an absence counter.
+		!! -------------------------------------------------------------
+		if glss['ghost_uni'] = 1 and hour >= 9 and glss['ghost_uni_day'] ! daystart:
+			glss['ghost_uni_day'] = daystart
+			gs 'mod_glss_uni_functions', 'ghost_credit'
+		end
+
+		!! -------------------------------------------------------------
+		!! One-click university day
+		!! Appends an action to the campus/lecture-hall screens. Gated on
+		!! a real class or exam action being present, so campus random
+		!! events and interactive NPC hooks (Niko, Katja, nerd_game_night)
+		!! are never bypassed.
+		!! -------------------------------------------------------------
+		if glss['auto_uni'] = 1 and ($curloc = 'uni_grounds' or $curloc = 'uni_lessons') and instr($curacts, 'Go to your ') > 0:
+			act 'GLSS: Attend the rest of your university day automatically': gt 'mod_glss_uni_functions', 'auto_uni_day'
+		end
+	end
+end
+
 --- mod_glss ---------------------------------

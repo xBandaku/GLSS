@@ -27,6 +27,32 @@ end
 'On automated school days (one-click or ghost), Sveta eats lunch on her own: a bagged lunch from home if she lives at her parents'' place, otherwise cafeteria food for 50 RUB if she can afford it, otherwise she goes without. Same food and money effects as picking those options in the cafeteria yourself. Leave this off if you are managing her diet or money closely.'
 *nl
 '<i>Notes: automated days use average participation, so playing lessons yourself is still slightly better for grades. Automated attendance skips the school''s social life: friendships, gossip, cheerleading and classroom events do not progress on automated days. If ghost attendance already credited today and you attend lessons in person anyway, that day''s lesson grades can count twice.</i>'
+*nl
+'<center><h3>University</h3></center>'
+'These features only take effect while enrolled at the university, during semesters 1-4 of nursing or teaching studies (no lecture content exists for later semesters in the current game build), Monday to Thursday. They are independent of the school features above and can be combined with them or used alone.'
+*nl
+if glss['auto_uni'] = 1:
+	'<b>One-click university day:</b> <a href="exec: glss[''auto_uni''] = 0 & gs ''mod_glss_options''">Enabled</a> (click to disable)'
+else
+	'<b>One-click university day:</b> <a href="exec: glss[''auto_uni''] = 1 & gs ''mod_glss_options''">Disabled</a> (click to enable)'
+end
+'Adds a "GLSS: Attend the rest of your university day automatically" action to the campus and lecture hallway screens. Credits every remaining lecture and any due exam with average participation and advances the clock to match.'
+*nl
+if glss['ghost_uni'] = 1:
+	'<b>Ghost university attendance:</b> <a href="exec: glss[''ghost_uni''] = 0 & gs ''mod_glss_options''">Enabled</a> (click to disable)'
+else
+	'<b>Ghost university attendance:</b> <a href="exec: glss[''ghost_uni''] = 1 & gs ''mod_glss_options''">Disabled</a> (click to enable)'
+end
+'University happens without you. Lectures and any due exam are credited automatically, and you are free to spend the day as you wish. Missed or failed exams, not missed lectures, are what actually gets you expelled from university - so this also guarantees you are never expelled for skipping.'
+*nl
+if glss['uni_electives'] = 1:
+	'<b>Auto-attend electives:</b> <a href="exec: glss[''uni_electives''] = 0 & gs ''mod_glss_options''">Enabled</a> (click to disable)'
+else
+	'<b>Auto-attend electives:</b> <a href="exec: glss[''uni_electives''] = 1 & gs ''mod_glss_options''">Disabled</a> (click to enable)'
+end
+'Only takes effect together with one of the two university options above. Electives (Computers, Art, Psychology, African/Asian Studies) carry no grade weight and have no exam in the game - this only collects the small skill-point reward the real "listen attentively" choice gives, and skips the rest.'
+*nl
+'<i>Notes: automated university days use average participation, so attending lectures yourself is still slightly better for grades. Automated attendance skips the university''s social life: campus events, elective NPC content and classroom events do not progress on automated days.</i>'
 
 act 'Return': gt '$menu_settings', 'mods'
 

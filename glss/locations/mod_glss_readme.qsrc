@@ -14,8 +14,23 @@
 '<b>Auto-lunch</b>'
 'Optional, for automated days: Sveta eats a bagged lunch from home if available, otherwise buys cafeteria food (50 RUB) if she can afford it, otherwise goes without. Off by default so diets and budgets stay under your control.'
 *nl
-'<b>What automation does not do</b>'
+'<b>What school automation does not do</b>'
 'Automated school days skip the school''s social life: friendships, gossip, cheerleading, random classroom events and detention do not progress. Playing the lessons yourself remains slightly better for grades. Special morning scenes (a principal summons, grade postings, invitations) still play out normally when you show up in person.'
+*nl
+'<center><h3>University</h3></center>'
+'The same idea, for the university life stage - nursing and teaching studies, semesters 1-4 (no lecture content exists for later semesters in the current game build). Three independent features, all disabled by default.'
+*nl
+'<b>One-click university day</b>'
+'A new action appears on the campus and lecture hallway screens: "GLSS: Attend the rest of your university day automatically". Credits every remaining lecture and any due exam with average participation and advances the clock to match.'
+*nl
+'<b>Ghost university attendance</b>'
+'University simply happens without you: lectures and any due exam are credited automatically no matter where you are. Missed or failed exams, not missed lectures, are what actually gets you expelled from university, so this also means you can no longer be expelled for skipping.'
+*nl
+'<b>Auto-attend electives</b>'
+'Optional, and only does anything together with one of the two features above. Electives (Computers, Art, Psychology, African/Asian Studies) carry no grade weight in the game and have no exam - this just collects the small skill-point reward the real "listen attentively" choice gives.'
+*nl
+'<b>What university automation does not do</b>'
+'Automated university days skip the campus social life: random campus events, elective NPC content and classroom events do not progress. Attending lectures yourself remains slightly better for grades.'
 
 act 'Return': gt '$menu_settings', 'mods'
 
