@@ -1,16 +1,16 @@
 <div align="center">
   
-# Girl-Life-School-Skip
+# GLSS (Girl Life School Skip)
 
-[![Version](https://img.shields.io/github/v/release/xBandaku/Girl-Life-School-Skip?color=%230567ff&label=Latest%20Release&style=for-the-badge)](https://github.com/xBandaku/Girl-Life-School-Skip/releases/latest)
-![Downloads](https://img.shields.io/github/downloads/xBandaku/Girl-Life-School-Skip/total?label=Total%20Downloads&style=for-the-badge)
-[![License](https://img.shields.io/github/license/xBandaku/Girl-Life-School-Skip?style=for-the-badge)](LICENSE)
+[![Version](https://img.shields.io/github/v/release/xBandaku/GLSS?color=%230567ff&label=Latest%20Release&style=for-the-badge)](https://github.com/xBandaku/GLSS/releases/latest)
+![Downloads](https://img.shields.io/github/downloads/xBandaku/GLSS/total?label=Total%20Downloads&style=for-the-badge)
+[![License](https://img.shields.io/github/license/xBandaku/GLSS?style=for-the-badge)](LICENSE)
 
 </div>
 
 A mod for **[Girl Life — English Community Version](https://gitlab.com/kevinsmartstfg/girl-life)** (an adult 18+ life-sim game for the QSP engine) that makes the Pavlovsk school routine and the university routine optional, so your mornings are yours again.
 
-**Download:** grab `glss.qsp` from the [latest release](https://github.com/xBandaku/Girl-Life-School-Skip/releases/latest) — every version is published on the [Releases page](https://github.com/xBandaku/Girl-Life-School-Skip/releases).
+**Download:** grab `glss.qsp` from the [latest release](https://github.com/xBandaku/GLSS/releases/latest) — every version is published on the [Releases page](https://github.com/xBandaku/GLSS/releases).
 
 Vanilla Girl Life expects Sveta at school every weekday from 8:00 to 14:00, one clicked-through lesson at a time — and skipping it means climbing an absence ladder of angry mother confrontations that ends in expulsion. Later, university adds its own repetitive lecture grind across two degree programs. GLSS gives you a way out of both, all toggleable in-game and **off by default**:
 
@@ -52,7 +52,7 @@ Only takes effect together with one of the two university options above. Electiv
 
 ## Installing
 
-1. Download `glss.qsp` from the [latest release](https://github.com/xBandaku/Girl-Life-School-Skip/releases/latest), or build it yourself (below).
+1. Download `glss.qsp` from the [latest release](https://github.com/xBandaku/GLSS/releases/latest), or build it yourself (below).
 2. Copy it into the `mod` folder of your Girl Life install — create the folder next to `glife.qsp` if it doesn't exist.
 3. In game: **Settings → Mods → install new mod** → enter `glss`.
 4. Click the mod's **Options** link and enable the features you want.
