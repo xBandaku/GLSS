@@ -53,8 +53,8 @@ reference for GLSS work.
 ## Build & Run (from `reference/nightly/`)
 
 - **Interactive menu (Windows):** `MakeQSP.bat` — offers (B)uild, (D)ebug build, (R)un, (F)ull build+run, (Q)Gen editor, (V)alidate.
-- **Direct build:** `tools\qsp-cli.exe --compile locations glife.qsp glife.qproj`
-- **Two-step build (what `build.sh` does):** `python tools/txtmerge.py locations glife.txt glife.qproj` then `tools\txt2gam64.exe glife.txt glife.qsp`
+- **Direct build:** `tools\qsp-cli.exe --compile locations glife.qsp glife.qproj`. `build.sh` runs this same command with the `qsp-cli` binary for the current OS.
+- **Two-step build:** `python tools/txtmerge.py locations glife.txt glife.qproj` then `tools\txt2gam64.exe glife.txt glife.qsp`
 - **Debug build:** `python tools\build_debug.py locations glife.txt glife.qproj` then `tools\qsp-cli.exe glife.txt`
 - **Run:** `tools\Player-video\qspgui.exe glife.qsp`
 - **CI** (GitLab): `python3 tools/ci_build.py build-dev|release-dev|build-release`
