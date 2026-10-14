@@ -63,10 +63,17 @@ if glss['ghost_uni'] = 1 or glss['auto_uni'] = 1:
 		!! Appends an action to the campus/lecture-hall screens. Gated on
 		!! a real class or exam action being present, so campus random
 		!! events and interactive NPC hooks (Niko, Katja, nerd_game_night)
-		!! are never bypassed.
+		!! are never bypassed. uni_grounds offers every student the action
+		!! "Go to your room", and elective actions only matter when elective
+		!! automation is on, so both are removed before the prefix search.
 		!! -------------------------------------------------------------
-		if glss['auto_uni'] = 1 and ($curloc = 'uni_grounds' or $curloc = 'uni_lessons') and instr($curacts, 'Go to your ') > 0:
-			act 'GLSS: Attend the rest of your university day automatically': gt 'mod_glss_uni_functions', 'auto_uni_day'
+		if glss['auto_uni'] = 1 and ($curloc = 'uni_grounds' or $curloc = 'uni_lessons'):
+			$glss_acts = $replace($curacts, 'Go to your room')
+			if glss['uni_electives'] = 0: $glss_acts = $replace($glss_acts, 'Go to your elective')
+			if instr($glss_acts, 'Go to your ') > 0:
+				act 'GLSS: Attend the rest of your university day automatically': gt 'mod_glss_uni_functions', 'auto_uni_day'
+			end
+			killvar '$glss_acts'
 		end
 	end
 end

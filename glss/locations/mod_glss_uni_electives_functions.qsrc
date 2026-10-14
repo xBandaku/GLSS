@@ -110,15 +110,20 @@ end
 !! ---------------------------------------------------------------------
 !! auto_day
 !! Called from the auto_uni_day function in mod_glss_uni_functions when
-!! the elective toggle is on, after the graded core has already been
-!! processed for today. Advances the clock the same ~90 minutes the real
-!! third-period act does, only if there is actually an elective due.
+!! the elective toggle is on and the third period is still open, after
+!! the graded core has already been processed for today. The elective is
+!! due until it starts at 13:15. The clock moves to its start and end,
+!! as the real third-period act and lesson do, only if an elective was
+!! actually attended.
 !! ---------------------------------------------------------------------
 if $ARGS[0] = 'auto_day':
-	if uni_period['third'] = daystart: exit
-	if week ! 1 and week ! 2 and week ! 4: exit
-	minut += max(0, (13 - hour) * 60 + (15 - minut))
+	if hour > 13 or (hour = 13 and minut >= 15): exit
 	gs 'mod_glss_uni_electives_functions', 'credit_elective'
+	if uni_period['third'] = daystart:
+		minut += max(0, (13 - hour) * 60 + (15 - minut))
+		gs 'time'
+		gs 'mod_glss_uni_functions', 'lesson_end'
+	end
 	exit
 end
 

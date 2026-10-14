@@ -332,13 +332,31 @@ end
 
 
 !! ---------------------------------------------------------------------
+!! lesson_end
+!! Moves the clock from the start of a lecture to its end. Every real
+!! lecture and elective ends in uni_lessons 'short_break', whose time
+!! rules take 9:00 to 10:30, 11:00 to 12:30 and 13:15 to 14:45.
+!! ---------------------------------------------------------------------
+if $ARGS[0] = 'lesson_end':
+	if hour = 9: minut += 90 - minut
+	if hour = 11: minut += 90 - minut
+	if hour = 13: minut += 105 - minut
+	gs 'time'
+	exit
+end
+
+
+!! ---------------------------------------------------------------------
 !! auto_uni_day
 !! One-click university day, started from the campus/hallway action
 !! injected by mod_glss. Credits whichever lecture periods and exam are
 !! still due today and advances the clock using the same per-period
 !! formulas the real class actions use (including the nursing-semester-4
 !! second-period exception), landing at a realistic end-of-day time
-!! instead of a single hardcoded jump.
+!! instead of a single hardcoded jump. A period stops being due once its
+!! class has started (9:00, 11:00, 13:15; exams 9:00), the same cut-offs
+!! uni_lessons 'compute_stat_display' uses, so a late click only covers
+!! the rest of the day.
 !! ---------------------------------------------------------------------
 if $ARGS[0] = 'auto_uni_day':
 	*clr & cla
@@ -350,13 +368,16 @@ if $ARGS[0] = 'auto_uni_day':
 	glss_did_something = 0
 
 	if university['semester_week'] > 0:
-		if uni_period['first'] ! daystart:
+		if uni_period['first'] ! daystart and hour < 9:
 			minut += max(0, (9 - hour)*60 - minut)
 			gs 'time'
 			gs 'mod_glss_uni_functions', 'credit_period', 'first'
-			if uni_period['first'] = daystart: glss_did_something = 1
+			if uni_period['first'] = daystart:
+				glss_did_something = 1
+				gs 'mod_glss_uni_functions', 'lesson_end'
+			end
 		end
-		if uni_period['second'] ! daystart:
+		if uni_period['second'] ! daystart and hour < 11:
 			!! The gs time calls surrounding this block keep hour normalized,
 			!! so this literal check behaves the same as it does in vanilla play.
 			if $university['enrolled_in'] = 'nursing' and university['enrolled_in_semester'] = 4:
@@ -366,16 +387,22 @@ if $ARGS[0] = 'auto_uni_day':
 			end
 			gs 'time'
 			gs 'mod_glss_uni_functions', 'credit_period', 'second'
-			if uni_period['second'] = daystart: glss_did_something = 1
+			if uni_period['second'] = daystart:
+				glss_did_something = 1
+				gs 'mod_glss_uni_functions', 'lesson_end'
+			end
 		end
-		if uni_period['third'] ! daystart and week = 3:
+		if uni_period['third'] ! daystart and week = 3 and (hour < 13 or (hour = 13 and minut < 15)):
 			minut += max(0, (13 - hour) * 60 + (15 - minut))
 			gs 'time'
 			gs 'mod_glss_uni_functions', 'credit_period', 'third'
-			if uni_period['third'] = daystart: glss_did_something = 1
+			if uni_period['third'] = daystart:
+				glss_did_something = 1
+				gs 'mod_glss_uni_functions', 'lesson_end'
+			end
 		end
 	end
-	if university['exam_week'] > 0 and uni_period['exam'] ! daystart:
+	if university['exam_week'] > 0 and uni_period['exam'] ! daystart and hour < 9:
 		minut += max(0, (9 - hour)*60 - minut)
 		gs 'time'
 		gs 'mod_glss_uni_functions', 'credit_exam'
@@ -385,7 +412,10 @@ if $ARGS[0] = 'auto_uni_day':
 			glss_did_something = 1
 		end
 	end
-	if glss['uni_electives'] = 1: gs 'mod_glss_uni_electives_functions', 'auto_day'
+	if glss['uni_electives'] = 1 and uni_period['third'] ! daystart:
+		gs 'mod_glss_uni_electives_functions', 'auto_day'
+		if uni_period['third'] = daystart: glss_did_something = 1
+	end
 
 	gs 'stat'
 	$func('wrap', 'header center b', 'University')

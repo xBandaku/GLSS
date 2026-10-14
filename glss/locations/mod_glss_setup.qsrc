@@ -5,8 +5,8 @@
 $mod_info[0] = 'glss'
 !! 0 = mod name, saved to the $mod_name[i] array
 
-$mod_info[1] = '00200'
-!! 1 = mod version, displayed as 0.2
+$mod_info[1] = '00201'
+!! 1 = mod version, displayed as 0.2 fix 1
 
 $mod_info[2] = 'GLSS-Rolling'
 !! 2 = mod author
