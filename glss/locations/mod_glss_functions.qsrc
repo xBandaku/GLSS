@@ -21,8 +21,6 @@ if $ARGS[0] = 'ghost_credit':
 	lernSkill += 1
 	lernHome += 1
 	gs 'mod_glss_functions', 'day_grades', 0
-	gs 'mod_glss_functions', 'auto_lunch'
-	killvar 'glss_temp_lunch'
 	exit
 end
 
@@ -39,6 +37,10 @@ end
 !! ---------------------------------------------------------------------
 if $ARGS[0] = 'auto_lunch':
 	glss_temp_lunch = 0
+	if glss['lunch_day'] = daystart + 1:
+		glss_temp_lunch = 3
+		exit
+	end
 	if glss['auto_lunch'] = 1:
 		if func('homes_properties', 'has_access', 'parents_home'):
 			gs 'food', 'bagged_lunch_stats'
@@ -49,6 +51,7 @@ if $ARGS[0] = 'auto_lunch':
 			glss_temp_lunch = 2
 		end
 	end
+	if glss_temp_lunch > 0: glss['lunch_day'] = daystart + 1
 	exit
 end
 
@@ -88,6 +91,8 @@ if $ARGS[0] = 'auto_day':
 		'<i>You bought lunch at the cafeteria for <<$func(''money'', ''string_price'', 50)>> during the midday break.</i>'
 	elseif glss_temp_lunch = 0:
 		'<i>You didn''t stop for lunch, so grab something to eat if you''re hungry.</i>'
+	elseif glss_temp_lunch = 3:
+		'<i>GLSS already provided lunch today.</i>'
 	end
 	killvar 'glss_temp_lunch'
 
@@ -101,13 +106,17 @@ end
 !! Grade credit for the current day of lessons from period ARGS[1] onwards.
 !! The subject table matches the real lesson dispatcher in
 !! gschool_lessons 'schedule' (periods 2 and 5 are breaks). Each class
-!! gets attendance plus one intellect-modified participation activity,
-!! so automated days are solid but never beat playing lessons yourself.
+!! gets attendance and the selected participation bonuses.
 !! Runs at most once per game day.
 !! ---------------------------------------------------------------------
 if $ARGS[0] = 'day_grades':
 	if glss['grades_day'] = daystart: exit
 	glss['grades_day'] = daystart
+	glss['school_credit_day'] = daystart
+	killvar 'glss_school_gain'
+	killvar 'glss_school_after'
+	killvar 'glss_school_cost'
+	killvar '$glss_school_subject'
 
 	if week = 1:
 		$glss_subj[0] = 'math' & $glss_subj[1] = 'rus' & $glss_subj[3] = 'eng' & $glss_subj[4] = 'art' & $glss_subj[6] = 'bio' & $glss_subj[7] = 'pe'
@@ -122,14 +131,86 @@ if $ARGS[0] = 'day_grades':
 	glss_i = ARGS[1]
 	:glss_subj_loop
 	if $glss_subj[glss_i] ! '':
+		$glss_school_subject[] = $glss_subj[glss_i]
+		glss_grade_before = class['school_<<$glss_subj[glss_i]>>_weekly_grade_gain']
+		glss_will_before = pcs_willpwr
 		gs 'grades', 'attend_class', 'school', $glss_subj[glss_i]
-		gs 'grades', 'class_activity_attributes', 'school', $glss_subj[glss_i], pcs_intel
+		gs 'mod_glss_functions', 'school_activity', $glss_subj[glss_i]
+		glss_school_after[$glss_subj[glss_i]] = class['school_<<$glss_subj[glss_i]>>_weekly_grade_gain']
+		glss_school_gain[$glss_subj[glss_i]] = glss_school_after[$glss_subj[glss_i]] - glss_grade_before
+		glss_school_cost[$glss_subj[glss_i]] = glss_will_before - pcs_willpwr
 	end
 	glss_i += 1
 	if glss_i < 8: jump 'glss_subj_loop'
 
 	killvar 'glss_i'
 	killvar 'glss_subj'
+	killvar 'glss_grade_before'
+	killvar 'glss_will_before'
+	exit
+end
+
+if $ARGS[0] = 'pay_attention':
+	!! A silent hook must not change costs prepared by the current scene.
+	glss_attention_saved_cost = will_cost
+	gs 'willpower', 'chore', 'self', iif(grupTipe = 4 and trait_vars['academic'] = 0, 'hard', iif(trait_vars['academic'] > 0, 'easy', 'medium'))
+	if trait_vars['academic'] = 2:
+		will_cost = will_cost / 2
+	elseif trait_vars['academic'] >= 3:
+		will_cost = 0
+	end
+	if pcs_willpwr >= will_cost:
+		if will_cost > 0: gs 'willpower', 'pay', 'self', 'chore'
+		result = 1
+	end
+	will_cost = glss_attention_saved_cost
+	killvar 'glss_attention_saved_cost'
+	exit
+end
+
+if $ARGS[0] = 'school_activity':
+	!! PE has no listening branch; exercise and its rewards remain manual.
+	if glss['school_participation'] = 2 or $ARGS[1] = 'pe': exit
+	if func('mod_glss_functions', 'pay_attention') = 0: exit
+	gs 'grades', 'class_activity_attributes', 'school', $ARGS[1], pcs_intel
+	if glss['school_participation'] ! 1: exit
+	if $ARGS[1] = 'comp':
+		gs 'grades', 'class_activity_skill', 'school', 'comp', pcs_compskl
+	elseif $ARGS[1] = 'mus':
+		gs 'grades', 'class_activity_skill', 'school', 'mus', max(pcs_vokal, pcs_instrmusic)
+	elseif $ARGS[1] = 'art':
+		gs 'grades', 'class_activity_skill', 'school', 'art', pcs_artskls
+	elseif $ARGS[1] = 'shop':
+		gs 'grades', 'class_activity_skill', 'school', 'shop', pcs_hndiwrk
+	elseif $ARGS[1] = 'lit':
+		gs 'grades', 'class_activity_attributes', 'school', 'lit', pcs_prcptn
+	elseif $ARGS[1] = 'rus' or $ARGS[1] = 'eng':
+		gs 'grades', 'class_activity_attributes', 'school', $ARGS[1], pcs_chrsm
+	else
+		gs 'grades', 'class_activity_attributes', 'school', $ARGS[1], pcs_intel
+	end
+	exit
+end
+
+if $ARGS[0] = 'reconcile_grades':
+	if glss['school_credit_day'] ! daystart: exit
+	glss_check_i = 0
+	:glss_credit_loop
+	if glss_check_i < arrsize('$glss_school_subject'):
+		$glss_check_subject = $glss_school_subject[glss_check_i]
+		!! Only classroom code adds to this counter during a day. Homework
+		!! uses optional_weekly_grade_gain, so it does not replace attendance.
+		if glss_school_gain[$glss_check_subject] > 0 and class['school_<<$glss_check_subject>>_weekly_grade_gain'] > glss_school_after[$glss_check_subject]:
+			class['school_<<$glss_check_subject>>_weekly_grade_gain'] -= glss_school_gain[$glss_check_subject]
+			pcs_willpwr = min(willpowermax, pcs_willpwr + glss_school_cost[$glss_check_subject])
+			glss_school_gain[$glss_check_subject] = 0
+			glss_school_cost[$glss_check_subject] = 0
+		end
+		glss_check_i += 1
+		jump 'glss_credit_loop'
+	end
+	killvar 'glss_check_i'
+	killvar '$glss_check_subject'
 	exit
 end
 

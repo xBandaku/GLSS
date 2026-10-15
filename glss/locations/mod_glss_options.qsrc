@@ -3,30 +3,41 @@
 
 *clr & cla
 '<center><h2>GLSS - Girl Life School Skip</h2></center>'
-'Both features only take effect on the schoolgirl start, on school days during term time, while you are enrolled and not expelled. They are independent and can be combined.'
+'School attendance features only take effect on the schoolgirl start, on school days during term time, while you are enrolled and not expelled. They are independent and can be combined.'
 *nl
 if glss['auto_school'] = 1:
 	'<b>One-click school day:</b> <a href="exec: glss[''auto_school''] = 0 & gs ''mod_glss_options''">Enabled</a> (click to disable)'
 else
 	'<b>One-click school day:</b> <a href="exec: glss[''auto_school''] = 1 & gs ''mod_glss_options''">Disabled</a> (click to enable)'
 end
-'Adds a "GLSS: Attend the rest of the school day automatically" action to the school hallway in the morning and between classes. Sveta sits through every remaining lesson with average participation and the clock jumps to the end of the school day (14:00). Lunch follows the auto-lunch setting below.'
+'Adds a "GLSS: Attend the rest of the school day automatically" action to the school hallway in the morning and between classes. Sveta sits through every remaining lesson using the participation setting below and the clock jumps to the end of the school day (14:00). Lunch follows the auto-lunch setting below.'
 *nl
 if glss['ghost_school'] = 1:
 	'<b>Ghost attendance:</b> <a href="exec: glss[''ghost_school''] = 0 & gs ''mod_glss_options''">Enabled</a> (click to disable)'
 else
 	'<b>Ghost attendance:</b> <a href="exec: glss[''ghost_school''] = 1 & gs ''mod_glss_options''">Disabled</a> (click to enable)'
 end
-'School happens without you. On every school day from 8:00, attendance and average grades are credited automatically wherever you are, and you are free to spend the day as you wish. No absences accrue, your mother never confronts you about truancy, and you cannot be expelled for skipping.'
+'School happens without you. On every school day from 8:00, attendance and lesson credit are recorded automatically wherever you are, and you are free to spend the day as you wish. No absences accrue, your mother never confronts you about truancy, and you cannot be expelled for skipping.'
 *nl
 if glss['auto_lunch'] = 1:
 	'<b>Auto-lunch on automated days:</b> <a href="exec: glss[''auto_lunch''] = 0 & gs ''mod_glss_options''">Enabled</a> (click to disable)'
 else
 	'<b>Auto-lunch on automated days:</b> <a href="exec: glss[''auto_lunch''] = 1 & gs ''mod_glss_options''">Disabled</a> (click to enable)'
 end
-'On automated school days (one-click or ghost), Sveta eats lunch on her own: a bagged lunch from home if she lives at her parents'' place, otherwise cafeteria food for 50 RUB if she can afford it, otherwise she goes without. Same food and money effects as picking those options in the cafeteria yourself. Leave this off if you are managing her diet or money closely.'
+'On automated school days (one-click or ghost), Sveta eats lunch on her own: a bagged lunch from home if she has access to her parents'' home, otherwise cafeteria food for 50 RUB if she can afford it, otherwise she goes without. At most one automated meal is provided per day. Ghost lunch runs at the first location or sleep hook between 12:00 and 14:00. This guard does not track meals you choose manually. Leave this off if you are managing her diet or money closely.'
 *nl
-'<i>Notes: automated days use average participation, so playing lessons yourself is still slightly better for grades. Automated attendance skips the school''s social life: friendships, gossip, cheerleading and classroom events do not progress on automated days. If ghost attendance already credited today and you attend lessons in person anyway, that day''s lesson grades can count twice.</i>'
+'<i>Automated attendance skips friendships, gossip, cheerleading and classroom events. If you later earn manual lesson credit for a subject, GLSS removes its automated grade credit for that subject and refunds its participation cost at the next location or sleep hook. This applies to credit recorded by this version, starting with the next automated day.</i>'
+*nl
+*nl
+if glss['school_participation'] = 0:
+	'<b>School participation:</b> <a href="exec: glss[''school_participation''] = 1 & gs ''mod_glss_options''">Listen attentively</a>'
+elseif glss['school_participation'] = 1:
+	'<b>School participation:</b> <a href="exec: glss[''school_participation''] = 2 & gs ''mod_glss_options''">Active participation</a>'
+else
+	'<b>School participation:</b> <a href="exec: glss[''school_participation''] = 0 & gs ''mod_glss_options''">Attendance only</a>'
+end
+'Click to cycle. Listening is the default; active participation adds the subject-specific question or reading bonus. Both pay the normal listening willpower cost once per lesson. If you cannot afford it, you receive attendance only. These settings change grades and willpower, not experience or social rewards.'
+'PE receives attendance only; exercise rewards require manual play.'
 *nl
 '<center><h3>University</h3></center>'
 'These features only take effect while enrolled at the university, during semesters 1-4 of nursing or teaching studies (no lecture content exists for later semesters in the current game build), Monday to Thursday. They are independent of the school features above and can be combined with them or used alone.'
@@ -36,14 +47,14 @@ if glss['auto_uni'] = 1:
 else
 	'<b>One-click university day:</b> <a href="exec: glss[''auto_uni''] = 1 & gs ''mod_glss_options''">Disabled</a> (click to enable)'
 end
-'Adds a "GLSS: Attend the rest of your university day automatically" action to the campus and lecture hallway screens. Credits every remaining lecture and any due exam with average participation and advances the clock to match.'
+'Adds a "GLSS: Attend the rest of your university day automatically" action to the campus and lecture hallway screens. Credits every remaining lecture and any due exam using the participation setting below and advances the clock to match.'
 *nl
 if glss['ghost_uni'] = 1:
 	'<b>Ghost university attendance:</b> <a href="exec: glss[''ghost_uni''] = 0 & gs ''mod_glss_options''">Enabled</a> (click to disable)'
 else
 	'<b>Ghost university attendance:</b> <a href="exec: glss[''ghost_uni''] = 1 & gs ''mod_glss_options''">Disabled</a> (click to enable)'
 end
-'University happens without you. Lectures and any due exam are credited automatically, and you are free to spend the day as you wish. Missed or failed exams, not missed lectures, are what actually gets you expelled from university - so this also guarantees you are never expelled for skipping.'
+'University happens without you. Lectures and any due exam are credited automatically, and you are free to spend the day as you wish. Automation marks due exams completed. Passing still requires a grade above 40 in every subject; low grades can still cause expulsion.'
 *nl
 if glss['uni_electives'] = 1:
 	'<b>Auto-attend electives:</b> <a href="exec: glss[''uni_electives''] = 0 & gs ''mod_glss_options''">Enabled</a> (click to disable)'
@@ -52,7 +63,17 @@ else
 end
 'Only takes effect together with one of the two university options above. Electives (Computers, Art, Psychology, African/Asian Studies) carry no grade weight and have no exam in the game - this only collects the small skill-point reward the real "listen attentively" choice gives, and skips the rest.'
 *nl
-'<i>Notes: automated university days use average participation, so attending lectures yourself is still slightly better for grades. Automated attendance skips the university''s social life: campus events, elective NPC content and classroom events do not progress on automated days.</i>'
+'<i>Participation settings affect core lecture grades and willpower only. Experience, academic-trait progress and social rewards remain part of manual lectures. Electives keep their existing separate rewards and costs. Automated attendance skips campus events and classroom scenes.</i>'
+
+*nl
+if glss['uni_participation'] = 0:
+	'<b>University participation:</b> <a href="exec: glss[''uni_participation''] = 1 & gs ''mod_glss_options''">Listen attentively</a>'
+elseif glss['uni_participation'] = 1:
+	'<b>University participation:</b> <a href="exec: glss[''uni_participation''] = 2 & gs ''mod_glss_options''">Active participation</a>'
+else
+	'<b>University participation:</b> <a href="exec: glss[''uni_participation''] = 0 & gs ''mod_glss_options''">Attendance only</a>'
+end
+'Click to cycle. Listening is the default; active participation adds the subject-specific question or reading bonus. Both pay the normal listening willpower cost once per lesson. If you cannot afford it, you receive attendance only. These settings change grades and willpower, not experience or social rewards.'
 
 act 'Return': gt '$menu_settings', 'mods'
 

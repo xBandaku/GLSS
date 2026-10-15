@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node automation.mjs"
+  },
+  "dependencies": {
+    "@qsp/converters": "1.0.1",
+    "@qsp/wasm-engine": "1.6.1"
+  }
+}

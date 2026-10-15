@@ -3,34 +3,38 @@
 
 *clr & cla
 '<center><h2>GLSS - Girl Life School Skip</h2></center>'
-'GLSS automates the Pavlovsk school routine so you can spend your days as you like. It has two independent features, both disabled by default. Enable them from the Options link on the Mods page.'
+'GLSS automates the Pavlovsk school routine so you can spend your days as you like. School and university attendance options are disabled by default. Enable them from the Options link on the Mods page.'
 *nl
 '<b>One-click school day</b>'
-'A new action appears in the school hallway in the morning and between classes: "GLSS: Attend the rest of the school day automatically". Sveta sits through every remaining lesson with average participation and the clock jumps to the end of the school day. Homework still lands in your journal and grades tick up as if you attended with decent focus.'
+'A new action appears in the school hallway in the morning and between classes: "GLSS: Attend the rest of the school day automatically". Sveta sits through every remaining lesson with the selected participation level and the clock jumps to the end of the school day. Homework still lands in your journal and grades tick up as if you attended with decent focus.'
 *nl
 '<b>Ghost attendance</b>'
-'School simply happens without you. On every school day, from 8:00 onwards, attendance and average grades are credited automatically no matter where you are. No absences accrue, your mother will not confront you, and truancy can no longer get you expelled.'
+'School simply happens without you. On every school day, from 8:00 onwards, attendance and lesson credit are recorded automatically no matter where you are. No absences accrue, your mother will not confront you, and truancy can no longer get you expelled.'
 *nl
 '<b>Auto-lunch</b>'
 'Optional, for automated days: Sveta eats a bagged lunch from home if available, otherwise buys cafeteria food (50 RUB) if she can afford it, otherwise goes without. Off by default so diets and budgets stay under your control.'
 *nl
+'<b>Participation and safeguards</b>'
+'Options can select listening (default), active participation or attendance only separately for school and university. Listening and active participation pay the normal willpower cost; insufficient willpower gives attendance only. PE receives attendance only. Automated lunch runs at most once per day; ghost lunch waits for a hook between 12:00 and 14:00. Manual meals are not tracked.'
+'If you later earn manual school lesson credit, GLSS removes its recorded automated credit for that subject and refunds its participation cost at the next location or sleep hook. Existing credit from older versions cannot be reconciled.'
+*nl
 '<b>What school automation does not do</b>'
-'Automated school days skip the school''s social life: friendships, gossip, cheerleading, random classroom events and detention do not progress. Playing the lessons yourself remains slightly better for grades. Special morning scenes (a principal summons, grade postings, invitations) still play out normally when you show up in person.'
+'Automated school days skip the school''s social life: friendships, gossip, cheerleading, random classroom events and detention do not progress. Participation settings control grades and willpower; experience and social rewards require manual play. Special morning scenes (a principal summons, grade postings, invitations) still play out normally when you show up in person.'
 *nl
 '<center><h3>University</h3></center>'
-'The same idea, for the university life stage - nursing and teaching studies, semesters 1-4 (no lecture content exists for later semesters in the current game build). Three independent features, all disabled by default.'
+'The same idea, for the university life stage - nursing and teaching studies, semesters 1-4 (no lecture content exists for later semesters in the current game build). Attendance options and electives are disabled by default.'
 *nl
 '<b>One-click university day</b>'
-'A new action appears on the campus and lecture hallway screens: "GLSS: Attend the rest of your university day automatically". Credits every remaining lecture and any due exam with average participation and advances the clock to match.'
+'A new action appears on the campus and lecture hallway screens: "GLSS: Attend the rest of your university day automatically". Credits every remaining lecture and any due exam with the selected participation level and advances the clock to match.'
 *nl
 '<b>Ghost university attendance</b>'
-'University simply happens without you: lectures and any due exam are credited automatically no matter where you are. Missed or failed exams, not missed lectures, are what actually gets you expelled from university, so this also means you can no longer be expelled for skipping.'
+'University simply happens without you: lectures and any due exam are credited automatically no matter where you are. Due exams are marked completed. Passing still requires a grade above 40 in every subject; low grades can still cause expulsion.'
 *nl
 '<b>Auto-attend electives</b>'
 'Optional, and only does anything together with one of the two features above. Electives (Computers, Art, Psychology, African/Asian Studies) carry no grade weight in the game and have no exam - this just collects the small skill-point reward the real "listen attentively" choice gives.'
 *nl
 '<b>What university automation does not do</b>'
-'Automated university days skip the campus social life: random campus events, elective NPC content and classroom events do not progress. Attending lectures yourself remains slightly better for grades.'
+'Automated university days skip the campus social life: random campus events, elective NPC content and classroom events do not progress. Participation settings control grades and willpower; experience and social rewards require manual play.'
 
 act 'Return': gt '$menu_settings', 'mods'
 

@@ -25,6 +25,7 @@
 !! than giving food for free.
 !! ---------------------------------------------------------------------
 if $ARGS[0] = 'credit_elective':
+	if university['semester_week'] <= 0: exit
 	if uni_period['third'] = daystart: exit
 	if university['enrolled_in_semester'] < 1 or university['enrolled_in_semester'] > 4: exit
 	if week ! 1 and week ! 2 and week ! 4: exit
