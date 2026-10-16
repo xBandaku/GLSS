@@ -1,0 +1,48 @@
+name: Build and test GLSS
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: glss/tests/package-lock.json
+      - name: Fetch pinned game reference
+        run: |
+          git init reference/nightly
+          git -C reference/nightly fetch --depth 1 https://gitlab.com/kevinsmartstfg/girl-life.git 83b164f64224f1ba88fd409469c1a9379ad34f86
+          git -C reference/nightly checkout --detach FETCH_HEAD
+      - name: Install regression test dependencies
+        run: npm ci --prefix glss/tests --ignore-scripts
+      - name: Build mod with the pinned upstream compiler
+        run: |
+          # The upstream binary is not marked executable in Git.
+          install -m 755 reference/nightly/tools/qsp-cli "$RUNNER_TEMP/qsp-cli"
+          cd glss
+          "$RUNNER_TEMP/qsp-cli" --compile locations glss.qsp glss.qproj --no-builddate
+      - name: Test source and compiled mod
+        run: npm test --prefix glss/tests -- "$GITHUB_WORKSPACE/reference/nightly"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GLSS.qsp
+          path: glss/glss.qsp
+          if-no-files-found: error
+          retention-days: 7
