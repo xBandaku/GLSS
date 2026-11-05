@@ -39,10 +39,10 @@ Separate participation settings replace the previous fixed bonuses. Listening is
 
 ## Regression tests
 
-Install Node.js and run these commands from the repository root:
+Follow [the development requirements](../REQUIREMENTS.md) to install Node.js and the pinned reference, then run these commands from the repository root:
 
 ```text
-npm install --prefix glss/tests
+npm ci --prefix glss/tests --ignore-scripts
 node glss/tests/automation.mjs reference/nightly
 ```
 

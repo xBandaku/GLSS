@@ -63,13 +63,11 @@ The school features only apply to the schoolgirl start, during term time, while 
 
 ## Building from source
 
+See [REQUIREMENTS.md](REQUIREMENTS.md) for the complete dependency list, pinned reference checkout, installation commands, and build/test verification.
+
 The mod source lives in [`glss/locations/`](glss/locations/) (standard Girl Life `.qsrc` mod locations, manifest in `glss/glss.qproj`).
 
-Building requires a checkout of the upstream game at `reference/nightly` (not included in this repo):
-
-```
-git clone https://gitlab.com/kevinsmartstfg/girl-life.git reference/nightly
-```
+Building requires the pinned upstream game checkout at `reference/nightly` (not included in this repo); follow the setup commands in [REQUIREMENTS.md](REQUIREMENTS.md).
 
 Then run `glss/Make_mod.bat` (Windows) or `glss/Make_mod.sh` (Linux/macOS). Either compiles the locations with the upstream `qsp-cli` into `glss.qsp`.
 
