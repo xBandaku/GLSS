@@ -29,7 +29,7 @@ A mod for Girl Life (English Community Version) that makes the Pavlovsk school r
 Requires the reference Girl Life checkout at `../reference/nightly` (for `tools/qsp-cli`).
 
 - Windows: run `Make_mod.bat`
-- Linux/macOS: run `./Make_mod.sh`
+- Linux/macOS: run `bash Make_mod.sh` (macOS is untested)
 
 Either produces `glss.qsp`.
 

@@ -69,7 +69,7 @@ The mod source lives in [`glss/locations/`](glss/locations/) (standard Girl Life
 
 Building requires the pinned upstream game checkout at `reference/nightly` (not included in this repo); follow the setup commands in [REQUIREMENTS.md](REQUIREMENTS.md).
 
-Then run `glss/Make_mod.bat` (Windows) or `glss/Make_mod.sh` (Linux/macOS). Either compiles the locations with the upstream `qsp-cli` into `glss.qsp`.
+Then run `glss/Make_mod.bat` (Windows) or `glss/Make_mod.sh` (Linux, and macOS untested). Either compiles the locations with the upstream `qsp-cli` into `glss.qsp`.
 
 See [`glss/README.md`](glss/README.md) for design notes on how the mod hooks the game (dispatcher injection via `$curacts`, absence-counter mirroring, once-per-day grade crediting).
 

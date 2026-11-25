@@ -4,8 +4,9 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const game = process.argv[2];
-if (!game) throw new Error('Usage: node automation.mjs <Girl Life checkout> [node_modules directory]');
+if (!process.argv[2]) throw new Error('Usage: node automation.mjs <Girl Life checkout> [node_modules directory]');
+// npm runs this script from glss/tests, so resolve a relative checkout path from where npm was invoked.
+const game = path.resolve(process.env.INIT_CWD || process.cwd(), process.argv[2]);
 const modules = path.resolve(process.argv[3] || path.join(here, 'node_modules'));
 const pkg = (name, file) => path.join(modules, '@qsp', name, 'dist', file);
 const { initQspEngine } = await import(pathToFileURL(pkg('wasm-engine', 'wasm-engine.modern.js')));

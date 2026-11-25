@@ -3,10 +3,10 @@
 
 *clr & cla
 '<center><h2>GLSS - Girl Life School Skip</h2></center>'
-'GLSS automates the Pavlovsk school routine so you can spend your days as you like. School and university attendance options are disabled by default. Enable them from the Options link on the Mods page.'
+'GLSS automates the Pavlovsk school routine and the university routine so you can spend your days as you like. School and university attendance options are disabled by default. Enable them from the Options link on the Mods page.'
 *nl
 '<b>One-click school day</b>'
-'A new action appears in the school hallway in the morning and between classes: "GLSS: Attend the rest of the school day automatically". Sveta sits through every remaining lesson with the selected participation level and the clock jumps to the end of the school day. Homework still lands in your journal and grades tick up as if you attended with decent focus.'
+'A new action appears in the school hallway in the morning and between classes: "GLSS: Attend the rest of the school day automatically". Sveta sits through every remaining lesson with the selected participation level and the clock jumps to the end of the school day. Homework still lands in your journal, and grades and willpower follow the school participation setting in Options.'
 *nl
 '<b>Ghost attendance</b>'
 'School simply happens without you. On every school day, from 8:00 onwards, attendance and lesson credit are recorded automatically no matter where you are. No absences accrue, your mother will not confront you, and truancy can no longer get you expelled.'

@@ -9,7 +9,8 @@ glss_saved_will_cost = will_cost
 
 if glss['ghost_school'] = 1 or glss['auto_school'] = 1:
 	!! Shared gate: schoolgirl start, still enrolled, not expelled, term time, school day.
-	if $start_type['loc'] = 'sg' and gschoolVars['school_diploma'] = 0 and gschoolVars['block'] = 0 and kanikuli = 0 and week < 6:
+	!! Upstream locks the school during a suspension (gschool_grounds), so ghost credit must not run then either.
+	if $start_type['loc'] = 'sg' and gschoolVars['school_diploma'] = 0 and gschoolVars['block'] = 0 and suspended['on'] ! 1 and kanikuli = 0 and week < 6:
 		!! -------------------------------------------------------------
 		!! Ghost attendance
 		!! Once the school day has started (8:00), silently credit
@@ -39,7 +40,8 @@ if glss['ghost_school'] = 1 or glss['auto_school'] = 1:
 			if instr($curacts, 'Go to first period') > 0:
 				!! Morning hallway: start from period 0, like the vanilla 'Go to first period' action does.
 				act 'GLSS: Attend the whole school day automatically': school_period = 0 & gt 'mod_glss_functions', 'auto_day'
-			elseif instr($curacts, 'Go to next class') > 0:
+			elseif instr($curacts, 'Go to next class') > 0 or instr($curacts, 'Time for morning break') > 0 or instr($curacts, 'Time for lunch break') > 0:
+				!! The break hallways sit at school_period 2 and 5; day_grades skips those empty slots and auto_day still offers lunch at 5.
 				act 'GLSS: Attend the rest of the school day automatically': gt 'mod_glss_functions', 'auto_day'
 			end
 		end
