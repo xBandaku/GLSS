@@ -65,14 +65,16 @@ if glss['ghost_uni'] = 1 or glss['auto_uni'] = 1:
 	if university['student'] = 1 and university['enrolled_in_semester'] > university['semester_passed'] and week < 5:
 		!! -------------------------------------------------------------
 		!! Ghost attendance
-		!! Once the day has started, silently credit whatever lectures
-		!! and exam are due today, wherever the player is. Also silently
+		!! Silently credit each lecture (and the exam) once its start time
+		!! has passed, wherever the player is, so lectures that have not
+		!! started yet can still be attended in person. Also silently
 		!! completes electives when that toggle is on. Exam completion
 		!! prevents missing-exam failures; passing still requires grades > 40.
 		!! -------------------------------------------------------------
 		if glss['ghost_uni'] = 1 and hour >= 9 and glss['ghost_uni_day'] ! daystart:
-			glss['ghost_uni_day'] = daystart
 			gs 'mod_glss_uni_functions', 'ghost_credit'
+			!! Every slot has started by 13:15; stop checking for the rest of the day.
+			if hour > 13 or (hour = 13 and minut >= 15): glss['ghost_uni_day'] = daystart
 		end
 
 		!! -------------------------------------------------------------

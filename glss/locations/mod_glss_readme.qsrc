@@ -28,7 +28,7 @@
 'A new action appears on the campus and lecture hallway screens: "GLSS: Attend the rest of your university day automatically". Credits every remaining lecture and any due exam with the selected participation level and advances the clock to match.'
 *nl
 '<b>Ghost university attendance</b>'
-'University simply happens without you: lectures and any due exam are credited automatically no matter where you are. Due exams are marked completed. Passing still requires a grade above 40 in every subject; low grades can still cause expulsion.'
+'University simply happens without you: each lecture and any due exam is credited automatically once it starts, no matter where you are. Lectures that have not started yet can still be attended in person. Due exams are marked completed. Passing still requires a grade above 40 in every subject; low grades can still cause expulsion.'
 *nl
 '<b>Auto-attend electives</b>'
 'Optional, and only does anything together with one of the two features above. Electives (Computers, Art, Psychology, African/Asian Studies) carry no grade weight in the game and have no exam - this just collects the small skill-point reward the real "listen attentively" choice gives.'

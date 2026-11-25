@@ -306,6 +306,24 @@ test('core university modes and insufficient willpower', () => {
     assert.equal(value('pcs_willpwr'), will - cost);
   }
 });
+test('ghost university credits each lecture once it starts and leaves later ones attendable', () => {
+  setup("hour = 10 & glss['ghost_uni'] = 1 & $onnewloc = 'mod_glss'");
+  exec("gt 'test_hallway'");
+  assert.equal(uniGain('patient care 101'), 20);
+  assert.equal(uniGain('anatomy and physiology 101'), 0);
+  exec("gt 'uni_grounds'");
+  assert.ok(actions.some(a => a.name.startsWith('Go to your Anatomy and Physiology 101')));
+  exec("hour = 11 & gt 'test_hallway'");
+  assert.equal(uniGain('anatomy and physiology 101'), 20);
+  assert.equal(uniGain('patient care 101'), 20);
+  assert.equal(keyed('glss', 'ghost_uni_day'), 0);
+  exec("hour = 14 & gt 'test_hallway'");
+  assert.equal(keyed('glss', 'ghost_uni_day'), 100);
+  // A lecture the player already attended is never credited again.
+  setup("hour = 11 & glss['ghost_uni'] = 1 & uni_period['second'] = 100 & $onnewloc = 'mod_glss'");
+  exec("gt 'test_hallway'");
+  assert.equal(uniGain('anatomy and physiology 101'), 0);
+});
 test('university day follows lecture time and late arrivals skip missed periods', () => {
   for (const [hour, minute, first, end] of [[8,0,20,12], [10,15,0,12], [15,0,0,15]]) {
     setup(`hour = ${hour} & minut = ${minute} & glss['auto_uni'] = 1 & $onnewloc = 'mod_glss'`);

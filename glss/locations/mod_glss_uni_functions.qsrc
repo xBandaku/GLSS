@@ -318,19 +318,24 @@ end
 
 !! ---------------------------------------------------------------------
 !! ghost_credit
-!! Background credit for lectures and exam due today, wherever the
-!! player is. Runs from the dispatcher, so it must not print or change
-!! the screen. Zero time cost, same as the school ghost_credit - attendance
-!! happens in the background while the player spends the day elsewhere.
+!! Background credit for the lectures and exam that have started today,
+!! wherever the player is. Runs from the dispatcher (from 9:00), so it must
+!! not print or change the screen. Zero time cost, same as the school
+!! ghost_credit. A period is only credited once its class has started
+!! (9:00, 11:00, 13:15), so a later lecture stays available in person until
+!! then; credit_period skips a period the player already attended.
 !! ---------------------------------------------------------------------
 if $ARGS[0] = 'ghost_credit':
+	glss_third_started = 0
+	if hour > 13 or (hour = 13 and minut >= 15): glss_third_started = 1
 	if university['semester_week'] > 0:
 		gs 'mod_glss_uni_functions', 'credit_period', 'first'
-		gs 'mod_glss_uni_functions', 'credit_period', 'second'
-		gs 'mod_glss_uni_functions', 'credit_period', 'third'
+		if hour >= 11: gs 'mod_glss_uni_functions', 'credit_period', 'second'
+		if glss_third_started = 1: gs 'mod_glss_uni_functions', 'credit_period', 'third'
 	end
 	if university['exam_week'] > 0: gs 'mod_glss_uni_functions', 'credit_exam'
-	if glss['uni_electives'] = 1: gs 'mod_glss_uni_electives_functions', 'ghost_credit'
+	if glss['uni_electives'] = 1 and glss_third_started = 1: gs 'mod_glss_uni_electives_functions', 'ghost_credit'
+	killvar 'glss_third_started'
 	exit
 end
 

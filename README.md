@@ -38,7 +38,7 @@ A new action on the campus and lecture-hall screens: *"GLSS: Attend the rest of 
 
 #### Ghost university attendance
 
-University simply happens without you: lectures and any due exam are credited automatically no matter where Sveta is. Due exams are marked completed. Passing still requires a grade above 40 in every subject; automation does not guarantee passing or prevent expulsion for low grades.
+University simply happens without you: each lecture and any due exam is credited automatically once it starts, no matter where Sveta is. Lectures that have not started yet can still be attended in person. Due exams are marked completed. Passing still requires a grade above 40 in every subject; automation does not guarantee passing or prevent expulsion for low grades.
 
 #### Auto-attend electives (optional)
 

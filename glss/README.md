@@ -11,7 +11,7 @@ A mod for Girl Life (English Community Version) that makes the Pavlovsk school r
 ## University
 
 - **One-click university day**: a new campus/lecture-hall action, *"GLSS: Attend the rest of your university day automatically"*, credits every remaining lecture and any due exam with the selected participation level and advances the clock to match. Covers both degree programs (nursing, teaching studies), semesters 1-4: no lecture content exists for later semesters in the current game build.
-- **Ghost university attendance**: university happens without you. Lectures and any due exam are credited automatically wherever Sveta is. Due exams are marked completed. Passing still requires a grade above 40 in every subject; automation does not guarantee passing or prevent expulsion for low grades.
+- **Ghost university attendance**: university happens without you. Each lecture and any due exam is credited automatically once it starts, wherever Sveta is. Lectures that have not started yet can still be attended in person. Due exams are marked completed. Passing still requires a grade above 40 in every subject; automation does not guarantee passing or prevent expulsion for low grades.
 - **Auto-attend electives**: optional, only takes effect together with one of the two features above. Electives (Computers, Art, Psychology, African/Asian Studies) carry no grade weight and have no exam in the real game, so this just collects the minor skill-point reward the "listen attentively" choice grants.
 
 ## Design notes
