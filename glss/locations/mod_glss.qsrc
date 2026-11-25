@@ -28,6 +28,16 @@ if glss['ghost_school'] = 1 or glss['auto_school'] = 1:
 			gs 'mod_glss_functions', 'auto_lunch'
 			killvar 'glss_temp_lunch'
 		end
+		!! Ghost credit marks today as attended, which hides the vanilla late
+		!! entrance (8:00-8:59) on the school grounds. Offer it again with the
+		!! same uniform and Niko conditions and the same demerit. The morning
+		!! hallway will not credit attendance twice, and manual lessons replace
+		!! the automated credit through reconcile_grades.
+		if glss['ghost_school'] = 1 and glss['ghost_day'] = daystart and hour = 8 and $curloc = 'gschool_grounds' and $loc_arg = 'main' and NikoEv ! 10:
+			if (PCloStyle2 = 4 or cheatVars['school_clothing'] ! 0) and instr($ucase($curacts), '''BUILDING''') = 0:
+				act '<b>Rush to class</b>': demerit += 10 & gt 'gschool_grounds', 'building'
+			end
+		end
 
 		!! -------------------------------------------------------------
 		!! One-click school day

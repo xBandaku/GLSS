@@ -275,6 +275,29 @@ test('school automation respects enrolment, suspension, holidays and weekends', 
   assert.equal(keyed('gschoolVars', 'absence_count'), -1);
   assert.equal(gain('math'), 20);
 });
+test('ghost school keeps the late entrance on the school grounds', () => {
+  const rush = () => actions.filter(a => a.name === '<b>Rush to class</b>').length;
+  // Ghost credit ran earlier in the hour, so the vanilla action is hidden and GLSS restores it.
+  setup("hour = 8 & PCloStyle2 = 4 & glss['ghost_school'] = 1 & $onnewloc = 'mod_glss'");
+  exec("gt 'test_hallway'");
+  assert.equal(keyed('gschoolVars', 'last_attendance'), 100);
+  exec("gt 'gschool_grounds', 'main'");
+  assert.equal(rush(), 1);
+  click('<b>Rush to class</b>');
+  assert.equal(value('demerit'), 10);
+  assert.equal(keyed('gschoolVars', 'absence_count'), -1);
+  // The grounds are the first screen after 8:00: the vanilla action is already there.
+  setup("hour = 8 & PCloStyle2 = 4 & glss['ghost_school'] = 1 & $onnewloc = 'mod_glss'");
+  exec("gt 'gschool_grounds', 'main'");
+  assert.equal(rush(), 1);
+  // No school uniform, a different hour or another grounds screen: nothing is added.
+  for (const [extra, screen] of [['PCloStyle2 = 0', 'main'], ['PCloStyle2 = 4 & hour = 9', 'main'], ['PCloStyle2 = 4', 'building']]) {
+    setup(`hour = 8 & ${extra} & glss['ghost_school'] = 1 & $onnewloc = 'mod_glss'`);
+    exec("gt 'test_hallway'");
+    exec(`gt 'gschool_grounds', '${screen}'`);
+    assert.equal(rush(), 0, `${extra} ${screen}`);
+  }
+});
 test('core university modes and insufficient willpower', () => {
   for (const [mode, will, expected, cost] of [[0,100,20,6], [1,100,33,6], [2,100,10,0], [1,0,10,0]]) {
     setup(`glss['uni_participation'] = ${mode} & pcs_willpwr = ${will}`);
