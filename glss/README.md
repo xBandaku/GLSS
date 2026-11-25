@@ -33,6 +33,10 @@ Requires the reference Girl Life checkout at `../reference/nightly` (for `tools/
 
 Either produces `glss.qsp`.
 
+## 0.3.1 changes
+
+Ghost school attendance pauses while Sveta is suspended. The one-click school day is also offered at the morning and lunch breaks. With ghost school attendance on, the 8:00-8:59 late entrance ("Rush to class") is still offered on the school grounds. Ghost university attendance credits each lecture once it starts, so later lectures can still be attended in person.
+
 ## 0.3 changes
 
 Separate participation settings replace the previous fixed bonuses. Listening is the default, including in existing saves, and now costs willpower. School grade records let later manual lessons replace automated credit without blocking scenes. Automated lunch has a daily guard, with ghost lunch deferred to midday. University action checks inspect destinations, electives no longer run during exam weeks, and the descriptions explain that exam completion does not guarantee passing.
