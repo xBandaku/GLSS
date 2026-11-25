@@ -24,7 +24,7 @@ A new action in the school hallway: *"GLSS: Attend the whole/rest of the school 
 
 #### Ghost attendance
 
-School simply happens without you. On every school day from 8:00, attendance and lesson credit are recorded automatically no matter where Sveta is. No absences accrue, her mother never confronts her, and truancy can no longer get her expelled.
+School simply happens without you. On every school day from 8:00, attendance and lesson credit are recorded automatically no matter where Sveta is. No absences accrue (except on days she is suspended), her mother never confronts her, and truancy can no longer get her expelled.
 
 #### Auto-lunch (optional)
 
