@@ -4,13 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-**GLSS = Girl Life School Skip** — this repository is the GLSS project. The root
-`D:\Github\GLSS-Rolling` is not (yet) a git repository; GLSS work happens here at
-the root.
+**GLSS = Girl Life School Skip** — this repository (`xBandaku/GLSS`) is the GLSS
+project; work happens at the repository root.
 
 `reference/` is exactly what its name says: **read-only reference material**. It
-contains `reference/nightly/`, a git clone of the upstream Girl Life QSP game
-(`https://gitlab.com/kevinsmartstfg/girl-life.git`, branch `master`). Consult it to
+is git-ignored and contains `reference/nightly/`, a checkout of the upstream Girl
+Life QSP game (`https://gitlab.com/kevinsmartstfg/girl-life.git`) at the commit
+pinned in `.github/workflows/ci.yml` and `REQUIREMENTS.md`. Consult it to
 understand game systems, conventions, and tooling — do not treat it as the working
 codebase, and do not modify it unless explicitly asked.
 
@@ -22,12 +22,20 @@ compiled into a single `glife.qsp` binary played with a QSP player.
 
 GLSS is implemented as a runtime mod (loaded via `inclib` from the game's `mod/`
 folder, enabled in Settings → Mods). Source in `glss/locations/`, manifest
-`glss/glss.qproj`, built with `glss/Make_mod.bat` (calls the reference `qsp-cli`).
-New `.qsrc` files must be registered in `glss.qproj` or they are silently excluded.
+`glss/glss.qproj`, built with `glss/Make_mod.bat` on Windows or `glss/Make_mod.sh`
+on Linux/macOS (both call the reference `qsp-cli`). New `.qsrc` files must be
+registered in `glss.qproj` or they are silently excluded. The built `glss/glss.qsp`
+is committed, so rebuild it whenever `glss/locations/` changes.
 
-Features (see `glss/README.md`): one-click auto-attendance of the school day, and
-"ghost attendance" that credits school in the background — both off by default,
-toggled on the mod's Options page.
+Regression tests (QSP WASM, run against both the source and the compiled
+`glss.qsp`): `npm ci --prefix glss/tests --ignore-scripts` once, then
+`npm test --prefix glss/tests -- reference/nightly` from the repository root.
+
+Features (see `glss/README.md`): one-click and ghost (background) attendance for
+the school day and for the university (lectures, exams, optional electives), plus
+auto-lunch and participation settings — all off by default, toggled on the mod's
+Options page. The feature text is repeated in `README.md`, `glss/README.md`,
+`mod_glss_options.qsrc` and `mod_glss_readme.qsrc`; keep all four in sync.
 
 Key mod-framework facts (from `reference/nightly/locations/mod_system.qsrc`):
 - `mod_<name>` (the bare dispatcher location) is called on **every location change**
