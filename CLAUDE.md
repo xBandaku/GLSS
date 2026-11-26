@@ -1,125 +1,119 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## What this is
 
-## Project
+GLSS (Girl Life School Skip) is a runtime mod for Girl Life: English Community Version, a QSP text game. It automates the
+Pavlovsk school day and the university routine: one-click attendance, background "ghost" attendance, auto-lunch, and
+participation settings, all off by default and toggled on the mod's Options page. Repo: `xBandaku/GLSS`.
 
-**GLSS = Girl Life School Skip** — this repository (`xBandaku/GLSS`) is the GLSS
-project; work happens at the repository root.
+## Language, runtime, dependencies
 
-`reference/` is exactly what its name says: **read-only reference material**. It
-is git-ignored and contains `reference/nightly/`, a checkout of the upstream Girl
-Life QSP game (`https://gitlab.com/kevinsmartstfg/girl-life.git`) at the commit
-pinned in `.github/workflows/ci.yml` and `REQUIREMENTS.md`. Consult it to
-understand game systems, conventions, and tooling — do not treat it as the working
-codebase, and do not modify it unless explicitly asked.
+- QSP source (`.qsrc`, one "location" per file), compiled to `glss/glss.qsp` and loaded by the game with `inclib` from its
+  `mod/` folder (Settings → Mods → install `glss`).
+- Compiler: `qsp-cli` from the upstream game checkout in `reference/nightly/tools/` (`.exe` on Windows, `qsp-cli` on Linux,
+  `qsp-cli-mac` on macOS).
+- Tests: Node 24 (`engines: >=24`) with `@qsp/wasm-engine` 1.6.1 and `@qsp/converters` 1.0.1, pinned exactly.
+- Upstream game pinned at commit `83b164f64224f1ba88fd409469c1a9379ad34f86` (in `ci.yml` and `REQUIREMENTS.md`).
 
-Girl Life is a life-simulation text game for the QSP engine. Its source is ~1,400
-`.qsrc` files in `locations/` (one QSP "location" per file) that get merged and
-compiled into a single `glife.qsp` binary played with a QSP player.
+## Layout
 
-## The GLSS Mod (`glss/`)
+```
+glss/
+  locations/                    mod source (the only game code that is ours)
+    mod_glss.qsrc               dispatcher: runs on every location change and sleep hook; gates and injects actions
+    mod_glss_setup.qsrc         $mod_info (name, version '00301' = "0.3 fix 1"); must stay first in glss.qproj
+    mod_glss_functions.qsrc     school: ghost_credit, auto_lunch, auto_day, day_grades, pay_attention, reconcile_grades
+    mod_glss_uni_functions.qsrc university: credit_period/credit_exam, timetable rows ('row'/'field'), auto_uni_day
+    mod_glss_uni_electives_functions.qsrc  electives (skill points only, no grades)
+    mod_glss_options.qsrc / mod_glss_readme.qsrc  in-game Options and readme pages
+  glss.qproj                    build manifest; a .qsrc not listed here is silently left out
+  glss.qsp                      compiled mod, committed on purpose (rebuild after any locations/ change)
+  Make_mod.bat / Make_mod.sh    build scripts (macOS path untested)
+  tests/automation.mjs          regression suite (QSP WASM), runs every case against source and compiled glss.qsp
+.github/workflows/              ci.yml (build + test on push/PR), release.yml (v* tag → GitHub release of glss.qsp)
+reference/nightly/              third-party upstream game checkout, git-ignored, read-only
+REQUIREMENTS.md                 fresh Windows setup (Git, Node 24.22.1, reference fetch)
+```
 
-GLSS is implemented as a runtime mod (loaded via `inclib` from the game's `mod/`
-folder, enabled in Settings → Mods). Source in `glss/locations/`, manifest
-`glss/glss.qproj`, built with `glss/Make_mod.bat` on Windows or `glss/Make_mod.sh`
-on Linux/macOS (both call the reference `qsp-cli`). New `.qsrc` files must be
-registered in `glss.qproj` or they are silently excluded. The built `glss/glss.qsp`
-is committed, so rebuild it whenever `glss/locations/` changes.
+## Commands (from the repo root)
 
-Regression tests (QSP WASM, run against both the source and the compiled
-`glss.qsp`): `npm ci --prefix glss/tests --ignore-scripts` once, then
-`npm test --prefix glss/tests -- reference/nightly` from the repository root.
+```
+git init reference/nightly
+git -C reference/nightly fetch --depth 1 https://gitlab.com/kevinsmartstfg/girl-life.git 83b164f64224f1ba88fd409469c1a9379ad34f86
+git -C reference/nightly checkout --detach FETCH_HEAD
+npm ci --prefix glss/tests --ignore-scripts          # once
+cd glss && Make_mod.bat                               # or: bash Make_mod.sh
+npm test --prefix glss/tests -- reference/nightly     # 56 cases on glss-review-fixes
+```
 
-Features (see `glss/README.md`): one-click and ghost (background) attendance for
-the school day and for the university (lectures, exams, optional electives), plus
-auto-lunch and participation settings — all off by default, toggled on the mod's
-Options page. The feature text is repeated in `README.md`, `glss/README.md`,
-`mod_glss_options.qsrc` and `mod_glss_readme.qsrc`; keep all four in sync.
+On Windows PowerShell use `npm.cmd` (REQUIREMENTS.md). Direct build: `qsp-cli --compile locations glss.qsp glss.qproj
+--no-builddate` from `glss/`. The user asked to be asked before tests are run.
 
-Key mod-framework facts (from `reference/nightly/locations/mod_system.qsrc`):
-- `mod_<name>` (the bare dispatcher location) is called on **every location change**
-  (via `LOCA.qsrc`, after the destination's code ran) and from sleep-trigger hooks —
-  so a mod can inspect `$curloc`/`$curacts` and append `act`s to any screen.
-- `mod_<name>_setup` registers `$mod_info[]`; `mod_<name>_options` and
-  `mod_<name>_readme` are opened from the Mods settings page;
-  `mod_<name>_saveupdater` runs on every save load.
-- The `stat`, `stat_display`, `func`, `arousal`, and `outfit` hooks are disabled
-  (`exit` at the top) in the current nightly — don't rely on them.
-- QSP gotcha the parser catches: an unpaired apostrophe inside a `!!` comment opens
-  a string and swallows following lines. Validate with the Chimrod parser (see below).
+Syntax check (from the old CLAUDE.md, not run this session because auto mode blocked it): merge mod and game with
+`reference/nightly/tools/txtmerge.py`, concatenate the two `.txt` files, run `tools/Parser/qsp_parser.exe --level error`.
+The game alone has about 90 missing-location errors; compare against that baseline. Checking the mod alone gives false
+"location does not exist" errors.
 
-To validate mod code against the full game: merge both with `txtmerge.py`,
-concatenate the two `.txt` files, and run `tools/Parser/qsp_parser.exe --level error`
-on the result. The upstream game itself has ~90 pre-existing missing-location errors;
-compare against that baseline. Validating the mod `.txt` alone reports false
-"location does not exist" errors for core-game locations (`stat`, `grades`, etc.).
+## Conventions
 
-Everything below documents the upstream game inside `reference/nightly/`, as
-reference for GLSS work.
+- Location files start with `# name` and end with `--- name ---------------------------------`. Comments are `!!`.
+  Handlers are `if $ARGS[0] = 'name': ... exit end` blocks, called with `gs`/`gt`/`func`/`$func`.
+- Every mod variable is prefixed `glss` (persistent settings and day stamps live in the `glss[...]` array). Temporaries
+  are `killvar`ed at the end of each handler.
+- Day guards compare to `daystart` (e.g. `glss['grades_day'] = daystart`). Upstream attendance flags are reused on
+  purpose: `gschoolVars['last_attendance']` for school, `uni_period['first'|'second'|'third'|'exam']` for university.
+- The dispatcher must stay silent (no text, no screen change) and restores `will_cost` around everything it does.
+- Upstream bugs are copied on purpose where noted (teaching-studies "ask a question" stat/subject, Asian/African
+  Studies 102 rewards). Don't "fix" them in the mod.
+- Tabs, LF line endings for `.qsrc`/`.sh`/`.qproj`, CRLF for `.bat` (`.gitattributes`).
+- Feature text is repeated in `README.md`, `glss/README.md`, `mod_glss_options.qsrc` and `mod_glss_readme.qsrc`.
+  Change all four together.
 
-## Build & Run (from `reference/nightly/`)
+## Gotchas
 
-- **Interactive menu (Windows):** `MakeQSP.bat` — offers (B)uild, (D)ebug build, (R)un, (F)ull build+run, (Q)Gen editor, (V)alidate.
-- **Direct build:** `tools\qsp-cli.exe --compile locations glife.qsp glife.qproj`. `build.sh` runs this same command with the `qsp-cli` binary for the current OS.
-- **Two-step build:** `python tools/txtmerge.py locations glife.txt glife.qproj` then `tools\txt2gam64.exe glife.txt glife.qsp`
-- **Debug build:** `python tools\build_debug.py locations glife.txt glife.qproj` then `tools\qsp-cli.exe glife.txt`
-- **Run:** `tools\Player-video\qspgui.exe glife.qsp`
-- **CI** (GitLab): `python3 tools/ci_build.py build-dev|release-dev|build-release`
+- Mod hooks: `mod_glss` runs after the destination location's code, so it sees the finished `$curacts` and can add
+  `act`s. The `stat`, `stat_display`, `func`, `arousal` and `outfit` hooks `exit` immediately in this upstream
+  version (`mod_system.qsrc:27-70`). Don't use them.
+- `$curacts` text: older players keep the original case, newer ones uppercase it. Compare with `$ucase(...)`.
+- School one-click finds hallway actions by their English labels (`mod_glss.qsrc`). Matching on where they lead was
+  rejected: the morning and break actions both go to `gschool_lessons 'schedule'`, and so does the detention
+  punishment "Leave the school" screen. A label rename upstream disables the button.
+- `gschool_lessons 'short_break'` never sets `$menu_arg`, so `$menu_arg` stays `'morning'` all day.
+- An unpaired apostrophe inside a `!!` comment opens a string and swallows the following lines.
+- QSP `$x` and `x` are the same variable (`killvar 'x'` clears both).
+- Tests use fixture stubs for `time`, `stat`, `money`, `food`, `uni_grounds`, `gschool_lessons`, `gschool_grounds`, so
+  they can't catch upstream changes to those screens.
+- `reference/nightly/` is not ours: don't edit or review it as project code.
+- Don't use the latest upstream when reproducing CI. Bump the pin in `ci.yml` and `REQUIREMENTS.md` together.
 
-**Critical:** `glife.qproj` is the build manifest. The merge tools iterate its
-`<Location name="..."/>` entries — a new `.qsrc` file in `locations/` is silently
-excluded from the build until it is registered in `glife.qproj`. A `$` in a location
-name maps to `_` in its filename.
+## Current state (2026-11-26)
 
-## Validation
+- `main` (389ea3d) has v0.3.0 plus the setup docs. Branch `glss-review-fixes` = draft PR #5, open, CI passing. It holds:
+  - test path fix, suspension gate, one-click at morning/lunch breaks, macOS build script, Node version
+  - restored the 8:00-8:59 "Rush to class" on the school grounds when ghost attendance already ran
+  - ghost university credits each lecture once it starts (9:00, 11:00, 13:15)
+  - suspended-day absence wording, new school tests, version 0.3.1, SHA-pinned actions
+  - university timetables rewritten as data rows (checked equal to the old if-chains on all 1,638 cases)
+- PR #5's description still has attribution lines. The user asked for them removed, but auto mode blocked the edit,
+  so the user will remove them by hand.
+- Planned: `@qsp/converters` 2.0.0 upgrade as its own PR. Dependabot PRs #3 and #4 were closed. #4 failed CI; inferred
+  cause: 2.0.0 publishes only ESM/CJS builds via `exports`, while `automation.mjs` imports `dist/index.modern.js` by path.
+- Decided: ghost credit keeps the game treating Sveta as at school for archetype points (`archetypes.qsrc:491`).
+- Before merging #5: play one school day and one university day in the real game with ghost attendance on (late
+  "Rush to class" at 8:xx; 11:00 lecture still offered at 10:00). Not done yet, nor a 5.7 player test.
+- After #5 merges: tag `v0.3.1` to publish the release.
 
-- **Syntax/lint (Chimrod parser):** run `python tools/txtmerge.py locations glife.txt glife.qproj`, then `tools\Parser\qsp_parser.exe --level warn glife.txt > validation.log` (this is `MakeQSP.bat` option V).
-- **Call validation** (checks every `gt`/`gs` targets an existing location + `$ARGS[0]` handler):
-  - Whole project: `python tools\callvalidator.py source=locations`
-  - Single file: `python tools\callvalidator.py source=locations file=<name>.qsrc`
-  - `Callvalidator.bat` runs it against the list in `tools\glife-validate.qproj`.
-- **Media checks:** `Check_media.bat` / `checkpics.bat` verify image/sound references.
+## Git and PRs
 
-## Tests
+Do not add attribution to pull requests or commits. In PR descriptions, leave out the hidden claude-projects-attribution comment, the "Requested by ... · project thread" line, the "Generated with Claude Code" line, and any claude.ai session link. In commit messages, leave out Co-Authored-By: Claude and Claude-Session trailers.
 
-`MakeTestQSP.bat` builds and launches a test game:
-`python tools\testbuilder.py locations test\testsuite-basic.qproj FALSE` followed by
-`txt2gam` on the generated file. Tests live in `test/*.qsrc` (see `test/test_file_template`),
-use assert helpers from `test/testframework.qsrc` (`assertEqualsString`, `assertEqualsNumber`,
-`testsetup` for a canned player character), and are registered in a testsuite `.qproj`
-(`test/testsuite-basic.qproj`). To run a subset, point testbuilder at a testsuite file
-listing only the tests you want. The framework sets `_ISTEST = 1`.
+- Work on a branch and open a PR to `main`. Rebuild and commit `glss/glss.qsp` with any `glss/locations/` change.
+- Bump `$mod_info[1]` in `mod_glss_setup.qsrc` and add a changelog entry in `glss/README.md` for behaviour changes.
+- Releases come from pushing a `v*` tag. CI rebuilds and tests, then publishes the tested `glss.qsp`.
+- Commit or open PRs only when the user asks.
 
-## QSP Source Conventions (`.qsrc`)
+## Keeping docs in sync
 
-- Each file starts with `# locationname`. Comments are `!!`. String variables are prefixed `$`.
-- **Event-dispatch pattern:** a location is a bag of handlers — `if $ARGS[0] = 'eventname': ... end` blocks. Invoke with `gt 'location', 'event'` (goto, replaces screen), `gs 'location', 'event'` (gosub), or `func('location', 'name', args)` / `$func(...)` for return values (`result` / `$result`).
-- Indentation: tabs; encoding UTF-8; LF line endings; final newline (enforced by `.editorconfig`).
-- File-name prefixes are regions: `pav_` (Pavlovsk), `city_` (St. Petersburg), `gad` (Gadukino), `pushkin` — `core_library.qsrc` `setloc` derives `$region` from them. `_attributes_*` files are clothing-item data. Player-character stats use the `pcs_` prefix.
+After any change that alters features, commands, setup steps, folder structure, dependencies, or behavior, update README.md in the same change so it matches the code. Don't rewrite sections the change didn't touch. After any change that alters what the project is or does, check the GitHub About section (description, website, topics). If it's out of date, update it with `gh repo edit` and tell me exactly what you changed. If `gh` isn't installed or authenticated, give me the exact text to paste instead. Update the "Current state" and folder structure parts of CLAUDE.md too when they stop being true.
 
-## Core Architecture
-
-- `locations/cikl.qsrc` — the day-rollover loop (runs at midnight/sleep: schedules, NPC state, recurring events).
-- `locations/stat.qsrc` — recalculates and renders the status panel; runs constantly after player actions.
-- `locations/core_library.qsrc` — shared location helpers (`setloc`, `stage_title`).
-- `locations/shortgs.qsrc` — small utility functions (day-of-week, etc.).
-- `locations/begin.qsrc` / `start.qsrc` — game start / new-game flow.
-- **Jobs v4 system:** `jobs.qsrc` is the employment API (hire/fire, clock in/out, paychecks, schedules, bookings — a full API reference is in its header comment). Job definitions live in `jobs_list.qsrc` (or custom files registered via `set_job_file`); `jobs_gigs.qsrc` covers gigs.
-- **Calendar system:** `calendar.qsrc`, `calendar_list.qsrc` (event definitions), `calendar_events.qsrc`, `calendar_query.qsrc`, `calendar_render.qsrc`, `calendar_schedule.qsrc`. Jobs v4 creates calendar events for scheduled work.
-- `locations/saveupdater.qsrc` — save-game migration when variables are renamed. The save version number lives in `saveg.qsrc`; when bumping it, both files must be committed together (see the header of `saveupdater.qsrc` for the required version-check pattern).
-- `mods/` contains optional mods (Additional Adventures, Cherrypop Agency, Ibiza); `isample_mod/` is a sample mod template with its own build scripts.
-
-## Active Migration Work
-
-Upstream removed its `docs/comprehensive_integration_master_plan.md` and
-`docs/calendar_events_integration_summary.md` (deleted in
-`reference/nightly` commit `46db75fe6`, 2026-07-14) — the `docs/` directory no
-longer exists there, so treat any prior notes citing those files as stale.
-There is no replacement master-plan doc as of this writing; before touching
-employment- or schedule-related code, instead check job-by-job state directly:
-`jobs.qsrc`'s header comment is the current Jobs v4 API reference, `jobs_list.qsrc`
-shows which jobs are already defined via the v4 config format, and
-`calendar_list.qsrc` shows which recurring events already exist. Grep the
-job's own `.qsrc` file for calls into `jobs.qsrc` (`gs 'jobs', 'set_employed'`,
-etc.) to tell whether it has been migrated yet.
+The mod's feature text also lives in `glss/README.md`, `mod_glss_options.qsrc` and `mod_glss_readme.qsrc`.
