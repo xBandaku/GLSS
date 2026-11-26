@@ -43,7 +43,7 @@ git -C reference/nightly fetch --depth 1 https://gitlab.com/kevinsmartstfg/girl-
 git -C reference/nightly checkout --detach FETCH_HEAD
 npm ci --prefix glss/tests --ignore-scripts          # once
 cd glss && Make_mod.bat                               # or: bash Make_mod.sh
-npm test --prefix glss/tests -- reference/nightly     # 56 cases on glss-review-fixes
+npm test --prefix glss/tests -- reference/nightly     # 56 cases as of v0.3.1
 ```
 
 On Windows PowerShell use `npm.cmd` (REQUIREMENTS.md). Direct build: `qsp-cli --compile locations glss.qsp glss.qproj
@@ -88,20 +88,18 @@ The game alone has about 90 missing-location errors; compare against that baseli
 
 ## Current state (2026-11-26)
 
-- `main` (389ea3d) has v0.3.0 plus the setup docs. Branch `glss-review-fixes` = draft PR #5, open, CI passing. It holds:
+- Latest release: v0.3.1 (PR #5, squash-merged as 2b19655). It added:
   - test path fix, suspension gate, one-click at morning/lunch breaks, macOS build script, Node version
   - restored the 8:00-8:59 "Rush to class" on the school grounds when ghost attendance already ran
   - ghost university credits each lecture once it starts (9:00, 11:00, 13:15)
-  - suspended-day absence wording, new school tests, version 0.3.1, SHA-pinned actions
+  - suspended-day absence wording, new school tests, SHA-pinned actions
   - university timetables rewritten as data rows (checked equal to the old if-chains on all 1,638 cases)
-- PR #5's description still has attribution lines. The user asked for them removed, but auto mode blocked the edit,
-  so the user will remove them by hand.
+- Not done: an in-game playtest of v0.3.1 (late "Rush to class" at 8:xx; 11:00 lecture still offered at 10:00 with
+  ghost university on), and any 5.7 player test.
+- PR #5's merged description still has attribution lines. Auto mode blocked removing them; the user will edit it.
 - Planned: `@qsp/converters` 2.0.0 upgrade as its own PR. Dependabot PRs #3 and #4 were closed. #4 failed CI; inferred
   cause: 2.0.0 publishes only ESM/CJS builds via `exports`, while `automation.mjs` imports `dist/index.modern.js` by path.
 - Decided: ghost credit keeps the game treating Sveta as at school for archetype points (`archetypes.qsrc:491`).
-- Before merging #5: play one school day and one university day in the real game with ghost attendance on (late
-  "Rush to class" at 8:xx; 11:00 lecture still offered at 10:00). Not done yet, nor a 5.7 player test.
-- After #5 merges: tag `v0.3.1` to publish the release.
 
 ## Git and PRs
 
