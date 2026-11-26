@@ -4,8 +4,9 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const game = process.argv[2];
-if (!game) throw new Error('Usage: node automation.mjs <Girl Life checkout> [node_modules directory]');
+if (!process.argv[2]) throw new Error('Usage: node automation.mjs <Girl Life checkout> [node_modules directory]');
+// npm runs this script from glss/tests, so resolve a relative checkout path from where npm was invoked.
+const game = path.resolve(process.env.INIT_CWD || process.cwd(), process.argv[2]);
 const modules = path.resolve(process.argv[3] || path.join(here, 'node_modules'));
 const pkg = (name, file) => path.join(modules, '@qsp', name, 'dist', file);
 const { initQspEngine } = await import(pathToFileURL(pkg('wasm-engine', 'wasm-engine.modern.js')));
@@ -49,6 +50,25 @@ act 'Go to your room': gt 'uni_dorm'
 # gschool_lessonsev1
 act 'Leave the lesson': gt 'test_hallway'
 --- gschool_lessonsev1 ---
+# gschool_lessons
+*clr & cla
+if $ARGS[0] = 'morning':
+	act 'Go to first period': school_period = 0 & gt 'gschool_lessons', 'schedule'
+	act 'Skip first period': school_period = 1 & gt 'gschool_lessons', 'skip'
+end
+if $ARGS[0] = 'summons': act 'Follow': gt 'test_hallway'
+if $ARGS[0] = 'short_break':
+	if school_period = 2: act 'Time for morning break': gt 'gschool_lessons', 'schedule'
+	if school_period = 5: act 'Time for lunch break': gt 'gschool_lessons', 'schedule'
+	if school_period = 3: act 'Go to next class': gt 'gschool_lessons', 'schedule'
+end
+--- gschool_lessons ---
+# gschool_grounds
+*clr & cla
+$loc = 'gschool_grounds' & $loc_arg = $ARGS[0]
+if $ARGS[0] = 'main' and hour = 8 and gschoolVars['last_attendance'] <> daystart: act '<b>Rush to class</b>': demerit += 10 & gt 'gschool_grounds', 'building'
+if $ARGS[0] = 'building': act 'Continue': gt 'test_hallway'
+--- gschool_grounds ---
 # test_hallway
 --- test_hallway ---
 `;
@@ -201,6 +221,83 @@ test('ghost lunch waits for midday and cannot repeat through one-click lunch', (
   assert.equal(value('test_meals'), 1);
   assert.equal(value('test_cash'), 50);
 });
+test('school one-click appears in the morning and break hallways only', () => {
+  const glssActions = () => actions.filter(a => a.name.startsWith('GLSS:')).map(a => a.name);
+  for (const [screen, period, hour, expected] of [
+    ['morning', 0, 7, ['GLSS: Attend the whole school day automatically']],
+    ['short_break', 2, 9, ['GLSS: Attend the rest of the school day automatically']],
+    ['short_break', 3, 10, ['GLSS: Attend the rest of the school day automatically']],
+    ['short_break', 5, 12, ['GLSS: Attend the rest of the school day automatically']],
+    ['short_break', 5, 14, []],
+    ['summons', 0, 7, []],
+  ]) {
+    setup(`hour = ${hour} & school_period = ${period} & glss['auto_school'] = 1 & $onnewloc = 'mod_glss'`);
+    exec(`gt 'gschool_lessons', '${screen}'`);
+    assert.deepEqual(glssActions(), expected, `${screen} ${period} ${hour}`);
+  }
+});
+test('one-click morning credits the whole day and ends at 14:00', () => {
+  setup("hour = 7 & minut = 30 & glss['auto_school'] = 1 & $onnewloc = 'mod_glss'");
+  exec("gt 'gschool_lessons', 'morning'");
+  click('GLSS: Attend the whole');
+  assert.equal(gain('math'), 20);
+  assert.equal(gain('bio'), 20);
+  assert.equal(gain('pe'), 10);
+  assert.equal(value('pcs_willpwr'), 70);
+  assert.equal(value('hour'), 14);
+  assert.equal(value('minut'), 0);
+  assert.equal(value('school_period'), 0);
+  assert.equal(value('test_meals'), 0);
+  assert.ok(actions.some(a => a.name === 'Head out to the school grounds'));
+});
+test('one-click from the lunch break skips finished periods and eats once', () => {
+  setup("hour = 12 & school_period = 5 & glss['auto_school'] = 1 & glss['auto_lunch'] = 1 & test_cash = 100 & $onnewloc = 'mod_glss'");
+  exec("gt 'gschool_lessons', 'short_break'");
+  click('GLSS: Attend the rest');
+  assert.equal(gain('math'), 0);
+  assert.equal(gain('eng'), 0);
+  assert.equal(gain('bio'), 20);
+  assert.equal(value('test_meals'), 1);
+  assert.equal(value('test_cash'), 50);
+  assert.equal(value('hour'), 14);
+});
+test('school automation respects enrolment, suspension, holidays and weekends', () => {
+  for (const gate of ["suspended['on'] = 1", "gschoolVars['block'] = 1", 'kanikuli = 1', 'week = 6', "$start_type['loc'] = 'other'", "gschoolVars['school_diploma'] = 1"]) {
+    setup(`hour = 9 & ${gate} & glss['ghost_school'] = 1 & glss['auto_school'] = 1 & $onnewloc = 'mod_glss'`);
+    exec("gt 'gschool_lessons', 'morning'");
+    assert.equal(actions.some(a => a.name.startsWith('GLSS:')), false, gate);
+    assert.equal(keyed('gschoolVars', 'last_attendance'), 0, gate);
+    assert.equal(gain('math'), 0, gate);
+  }
+  setup("hour = 9 & glss['ghost_school'] = 1 & $onnewloc = 'mod_glss'");
+  exec("gt 'test_hallway'");
+  assert.equal(keyed('gschoolVars', 'last_attendance'), 100);
+  assert.equal(keyed('gschoolVars', 'absence_count'), -1);
+  assert.equal(gain('math'), 20);
+});
+test('ghost school keeps the late entrance on the school grounds', () => {
+  const rush = () => actions.filter(a => a.name === '<b>Rush to class</b>').length;
+  // Ghost credit ran earlier in the hour, so the vanilla action is hidden and GLSS restores it.
+  setup("hour = 8 & PCloStyle2 = 4 & glss['ghost_school'] = 1 & $onnewloc = 'mod_glss'");
+  exec("gt 'test_hallway'");
+  assert.equal(keyed('gschoolVars', 'last_attendance'), 100);
+  exec("gt 'gschool_grounds', 'main'");
+  assert.equal(rush(), 1);
+  click('<b>Rush to class</b>');
+  assert.equal(value('demerit'), 10);
+  assert.equal(keyed('gschoolVars', 'absence_count'), -1);
+  // The grounds are the first screen after 8:00: the vanilla action is already there.
+  setup("hour = 8 & PCloStyle2 = 4 & glss['ghost_school'] = 1 & $onnewloc = 'mod_glss'");
+  exec("gt 'gschool_grounds', 'main'");
+  assert.equal(rush(), 1);
+  // No school uniform, a different hour or another grounds screen: nothing is added.
+  for (const [extra, screen] of [['PCloStyle2 = 0', 'main'], ['PCloStyle2 = 4 & hour = 9', 'main'], ['PCloStyle2 = 4', 'building']]) {
+    setup(`hour = 8 & ${extra} & glss['ghost_school'] = 1 & $onnewloc = 'mod_glss'`);
+    exec("gt 'test_hallway'");
+    exec(`gt 'gschool_grounds', '${screen}'`);
+    assert.equal(rush(), 0, `${extra} ${screen}`);
+  }
+});
 test('core university modes and insufficient willpower', () => {
   for (const [mode, will, expected, cost] of [[0,100,20,6], [1,100,33,6], [2,100,10,0], [1,0,10,0]]) {
     setup(`glss['uni_participation'] = ${mode} & pcs_willpwr = ${will}`);
@@ -208,6 +305,24 @@ test('core university modes and insufficient willpower', () => {
     assert.equal(uniGain('patient care 101'), expected);
     assert.equal(value('pcs_willpwr'), will - cost);
   }
+});
+test('ghost university credits each lecture once it starts and leaves later ones attendable', () => {
+  setup("hour = 10 & glss['ghost_uni'] = 1 & $onnewloc = 'mod_glss'");
+  exec("gt 'test_hallway'");
+  assert.equal(uniGain('patient care 101'), 20);
+  assert.equal(uniGain('anatomy and physiology 101'), 0);
+  exec("gt 'uni_grounds'");
+  assert.ok(actions.some(a => a.name.startsWith('Go to your Anatomy and Physiology 101')));
+  exec("hour = 11 & gt 'test_hallway'");
+  assert.equal(uniGain('anatomy and physiology 101'), 20);
+  assert.equal(uniGain('patient care 101'), 20);
+  assert.equal(keyed('glss', 'ghost_uni_day'), 0);
+  exec("hour = 14 & gt 'test_hallway'");
+  assert.equal(keyed('glss', 'ghost_uni_day'), 100);
+  // A lecture the player already attended is never credited again.
+  setup("hour = 11 & glss['ghost_uni'] = 1 & uni_period['second'] = 100 & $onnewloc = 'mod_glss'");
+  exec("gt 'test_hallway'");
+  assert.equal(uniGain('anatomy and physiology 101'), 0);
 });
 test('university day follows lecture time and late arrivals skip missed periods', () => {
   for (const [hour, minute, first, end] of [[8,0,20,12], [10,15,0,12], [15,0,0,15]]) {

@@ -132,8 +132,8 @@ chmod u+x reference/nightly/tools/qsp-cli
 npm test --prefix glss/tests -- reference/nightly
 ```
 
-The compiler is included in the reference on Windows and Linux. macOS compiler
-compatibility has not been verified.
+The reference includes the compiler for Windows, Linux and macOS. `Make_mod.sh`
+picks `qsp-cli-mac` on macOS, but the macOS build has not been verified.
 
 ## Existing portable setup in this workspace
 

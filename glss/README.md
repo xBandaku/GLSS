@@ -5,13 +5,13 @@ A mod for Girl Life (English Community Version) that makes the Pavlovsk school r
 ## School
 
 - **One-click school day**: a new hallway action, *"GLSS: Attend the rest of the school day automatically"*, sits Sveta through every remaining lesson with the selected participation level and jumps the clock to the end of the school day (14:00). Attendance, homework, and grade gains are all credited. Available in the morning hallway and between classes.
-- **Ghost attendance**: school happens without you. On every school day from 8:00, attendance and lesson credit are recorded automatically no matter where Sveta is. No absences accrue, the mother confrontation ladder never fires, and truancy can no longer get you expelled.
+- **Ghost attendance**: school happens without you. On every school day from 8:00, attendance and lesson credit are recorded automatically no matter where Sveta is. No absences accrue (except on days Sveta is suspended), the mother confrontation ladder never fires, and truancy can no longer get you expelled.
 - **Auto-lunch**: on automated days Sveta eats a bagged lunch from home when available, otherwise buys cafeteria food (50 ₽) when affordable, otherwise skips. Uses the game's silent `_stats` food handlers and the same money API as the real cafeteria. Off by default.
 
 ## University
 
 - **One-click university day**: a new campus/lecture-hall action, *"GLSS: Attend the rest of your university day automatically"*, credits every remaining lecture and any due exam with the selected participation level and advances the clock to match. Covers both degree programs (nursing, teaching studies), semesters 1-4: no lecture content exists for later semesters in the current game build.
-- **Ghost university attendance**: university happens without you. Lectures and any due exam are credited automatically wherever Sveta is. Due exams are marked completed. Passing still requires a grade above 40 in every subject; automation does not guarantee passing or prevent expulsion for low grades.
+- **Ghost university attendance**: university happens without you. Each lecture and any due exam is credited automatically once it starts, wherever Sveta is. Lectures that have not started yet can still be attended in person. Due exams are marked completed. Passing still requires a grade above 40 in every subject; automation does not guarantee passing or prevent expulsion for low grades.
 - **Auto-attend electives**: optional, only takes effect together with one of the two features above. Electives (Computers, Art, Psychology, African/Asian Studies) carry no grade weight and have no exam in the real game, so this just collects the minor skill-point reward the "listen attentively" choice grants.
 
 ## Design notes
@@ -29,9 +29,13 @@ A mod for Girl Life (English Community Version) that makes the Pavlovsk school r
 Requires the reference Girl Life checkout at `../reference/nightly` (for `tools/qsp-cli`).
 
 - Windows: run `Make_mod.bat`
-- Linux/macOS: run `./Make_mod.sh`
+- Linux/macOS: run `bash Make_mod.sh` (macOS is untested)
 
 Either produces `glss.qsp`.
+
+## 0.3.1 changes
+
+Ghost school attendance pauses while Sveta is suspended. The one-click school day is also offered at the morning and lunch breaks. With ghost school attendance on, the 8:00-8:59 late entrance ("Rush to class") is still offered on the school grounds. Ghost university attendance credits each lecture once it starts, so later lectures can still be attended in person.
 
 ## 0.3 changes
 

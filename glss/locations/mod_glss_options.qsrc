@@ -17,7 +17,7 @@ if glss['ghost_school'] = 1:
 else
 	'<b>Ghost attendance:</b> <a href="exec: glss[''ghost_school''] = 1 & gs ''mod_glss_options''">Disabled</a> (click to enable)'
 end
-'School happens without you. On every school day from 8:00, attendance and lesson credit are recorded automatically wherever you are, and you are free to spend the day as you wish. No absences accrue, your mother never confronts you about truancy, and you cannot be expelled for skipping.'
+'School happens without you. On every school day from 8:00, attendance and lesson credit are recorded automatically wherever you are, and you are free to spend the day as you wish. No absences accrue (except on days you are suspended), your mother never confronts you about truancy, and you cannot be expelled for skipping.'
 *nl
 if glss['auto_lunch'] = 1:
 	'<b>Auto-lunch on automated days:</b> <a href="exec: glss[''auto_lunch''] = 0 & gs ''mod_glss_options''">Enabled</a> (click to disable)'
@@ -54,7 +54,7 @@ if glss['ghost_uni'] = 1:
 else
 	'<b>Ghost university attendance:</b> <a href="exec: glss[''ghost_uni''] = 1 & gs ''mod_glss_options''">Disabled</a> (click to enable)'
 end
-'University happens without you. Lectures and any due exam are credited automatically, and you are free to spend the day as you wish. Automation marks due exams completed. Passing still requires a grade above 40 in every subject; low grades can still cause expulsion.'
+'University happens without you. Each lecture and any due exam is credited automatically once it starts, and you are free to spend the day as you wish. Lectures that have not started yet can still be attended in person. Automation marks due exams completed. Passing still requires a grade above 40 in every subject; low grades can still cause expulsion.'
 *nl
 if glss['uni_electives'] = 1:
 	'<b>Auto-attend electives:</b> <a href="exec: glss[''uni_electives''] = 0 & gs ''mod_glss_options''">Enabled</a> (click to disable)'

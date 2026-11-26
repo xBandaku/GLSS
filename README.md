@@ -20,11 +20,11 @@ Vanilla Girl Life expects Sveta at school every weekday from 8:00 to 14:00, one 
 
 #### One-click school day
 
-A new action in the school hallway: *"GLSS: Attend the whole/rest of the school day automatically"*. Sveta sits through every remaining lesson with the selected participation level and the clock jumps to the end of the school day. Attendance, homework, and grade gains are credited through the game's own grades system.
+A new action in the school hallway, in the morning and between classes (including the morning and lunch breaks): *"GLSS: Attend the whole/rest of the school day automatically"*. Sveta sits through every remaining lesson with the selected participation level and the clock jumps to the end of the school day (14:00). Attendance, homework, and grade gains are credited through the game's own grades system.
 
 #### Ghost attendance
 
-School simply happens without you. On every school day from 8:00, attendance and lesson credit are recorded automatically no matter where Sveta is. No absences accrue, her mother never confronts her, and truancy can no longer get her expelled.
+School simply happens without you. On every school day from 8:00, attendance and lesson credit are recorded automatically no matter where Sveta is. No absences accrue (except on days she is suspended), her mother never confronts her, and truancy can no longer get her expelled. You can still go to school in person, including the late entrance between 8:00 and 8:59.
 
 #### Auto-lunch (optional)
 
@@ -38,7 +38,7 @@ A new action on the campus and lecture-hall screens: *"GLSS: Attend the rest of 
 
 #### Ghost university attendance
 
-University simply happens without you: lectures and any due exam are credited automatically no matter where Sveta is. Due exams are marked completed. Passing still requires a grade above 40 in every subject; automation does not guarantee passing or prevent expulsion for low grades.
+University simply happens without you: each lecture and any due exam is credited automatically once it starts, no matter where Sveta is. Lectures that have not started yet can still be attended in person. Due exams are marked completed. Passing still requires a grade above 40 in every subject; automation does not guarantee passing or prevent expulsion for low grades.
 
 #### Auto-attend electives (optional)
 
@@ -69,7 +69,9 @@ The mod source lives in [`glss/locations/`](glss/locations/) (standard Girl Life
 
 Building requires the pinned upstream game checkout at `reference/nightly` (not included in this repo); follow the setup commands in [REQUIREMENTS.md](REQUIREMENTS.md).
 
-Then run `glss/Make_mod.bat` (Windows) or `glss/Make_mod.sh` (Linux/macOS). Either compiles the locations with the upstream `qsp-cli` into `glss.qsp`.
+Then, from the `glss` folder, run `Make_mod.bat` (Windows) or `bash Make_mod.sh` (Linux, and macOS untested). Either compiles the locations with the upstream `qsp-cli` into `glss.qsp`.
+
+Regression tests run from the repository root with `npm test --prefix glss/tests -- reference/nightly` after a one-time `npm ci --prefix glss/tests --ignore-scripts`.
 
 See [`glss/README.md`](glss/README.md) for design notes on how the mod hooks the game (dispatcher injection via `$curacts`, absence-counter mirroring, once-per-day grade crediting).
 

@@ -9,7 +9,8 @@ glss_saved_will_cost = will_cost
 
 if glss['ghost_school'] = 1 or glss['auto_school'] = 1:
 	!! Shared gate: schoolgirl start, still enrolled, not expelled, term time, school day.
-	if $start_type['loc'] = 'sg' and gschoolVars['school_diploma'] = 0 and gschoolVars['block'] = 0 and kanikuli = 0 and week < 6:
+	!! Upstream locks the school during a suspension (gschool_grounds), so ghost credit must not run then either.
+	if $start_type['loc'] = 'sg' and gschoolVars['school_diploma'] = 0 and gschoolVars['block'] = 0 and suspended['on'] ! 1 and kanikuli = 0 and week < 6:
 		!! -------------------------------------------------------------
 		!! Ghost attendance
 		!! Once the school day has started (8:00), silently credit
@@ -27,6 +28,16 @@ if glss['ghost_school'] = 1 or glss['auto_school'] = 1:
 			gs 'mod_glss_functions', 'auto_lunch'
 			killvar 'glss_temp_lunch'
 		end
+		!! Ghost credit marks today as attended, which hides the vanilla late
+		!! entrance (8:00-8:59) on the school grounds. Offer it again with the
+		!! same uniform and Niko conditions and the same demerit. The morning
+		!! hallway will not credit attendance twice, and manual lessons replace
+		!! the automated credit through reconcile_grades.
+		if glss['ghost_school'] = 1 and glss['ghost_day'] = daystart and hour = 8 and $curloc = 'gschool_grounds' and $loc_arg = 'main' and NikoEv ! 10:
+			if (PCloStyle2 = 4 or cheatVars['school_clothing'] ! 0) and instr($ucase($curacts), '''BUILDING''') = 0:
+				act '<b>Rush to class</b>': demerit += 10 & gt 'gschool_grounds', 'building'
+			end
+		end
 
 		!! -------------------------------------------------------------
 		!! One-click school day
@@ -39,7 +50,8 @@ if glss['ghost_school'] = 1 or glss['auto_school'] = 1:
 			if instr($curacts, 'Go to first period') > 0:
 				!! Morning hallway: start from period 0, like the vanilla 'Go to first period' action does.
 				act 'GLSS: Attend the whole school day automatically': school_period = 0 & gt 'mod_glss_functions', 'auto_day'
-			elseif instr($curacts, 'Go to next class') > 0:
+			elseif instr($curacts, 'Go to next class') > 0 or instr($curacts, 'Time for morning break') > 0 or instr($curacts, 'Time for lunch break') > 0:
+				!! The break hallways sit at school_period 2 and 5; day_grades skips those empty slots and auto_day still offers lunch at 5.
 				act 'GLSS: Attend the rest of the school day automatically': gt 'mod_glss_functions', 'auto_day'
 			end
 		end
@@ -53,14 +65,16 @@ if glss['ghost_uni'] = 1 or glss['auto_uni'] = 1:
 	if university['student'] = 1 and university['enrolled_in_semester'] > university['semester_passed'] and week < 5:
 		!! -------------------------------------------------------------
 		!! Ghost attendance
-		!! Once the day has started, silently credit whatever lectures
-		!! and exam are due today, wherever the player is. Also silently
+		!! Silently credit each lecture (and the exam) once its start time
+		!! has passed, wherever the player is, so lectures that have not
+		!! started yet can still be attended in person. Also silently
 		!! completes electives when that toggle is on. Exam completion
 		!! prevents missing-exam failures; passing still requires grades > 40.
 		!! -------------------------------------------------------------
 		if glss['ghost_uni'] = 1 and hour >= 9 and glss['ghost_uni_day'] ! daystart:
-			glss['ghost_uni_day'] = daystart
 			gs 'mod_glss_uni_functions', 'ghost_credit'
+			!! Every slot has started by 13:15; stop checking for the rest of the day.
+			if hour > 13 or (hour = 13 and minut >= 15): glss['ghost_uni_day'] = daystart
 		end
 
 		!! -------------------------------------------------------------

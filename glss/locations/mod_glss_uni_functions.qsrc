@@ -31,148 +31,10 @@
 if $ARGS[0] = 'credit_period':
 	if uni_period[$ARGS[1]] = daystart: exit
 	if university['enrolled_in_semester'] < 1 or university['enrolled_in_semester'] > 4: exit
-	if week > 4: exit
+	if week < 1 or week > 4: exit
 
-	killvar '$glss_us'
 	glss_sem = university['enrolled_in_semester']
-
-	if $university['enrolled_in'] = 'nursing':
-		if $ARGS[1] = 'first':
-			if glss_sem = 1:
-				if week = 1 or week = 4:
-					$glss_us = 'patient care 101'
-				elseif week = 2:
-					$glss_us = 'anatomy and physiology 101'
-				elseif week = 3:
-					$glss_us = 'examination and treatment 101'
-				end
-			elseif glss_sem = 2:
-				if week = 1 or week = 4:
-					$glss_us = 'patient care 102'
-				elseif week = 2:
-					$glss_us = 'anatomy and physiology 102'
-				elseif week = 3:
-					$glss_us = 'examination and treatment 102'
-				end
-			elseif glss_sem = 3:
-				if week = 1 or week = 4:
-					$glss_us = 'patient care 201'
-				elseif week = 2:
-					$glss_us = 'anatomy and physiology 201'
-				elseif week = 3:
-					$glss_us = 'dosages and pharmaceuticals 101'
-				end
-			elseif glss_sem = 4:
-				if week = 1 or week = 4:
-					$glss_us = 'patient care 202'
-				elseif week = 2:
-					$glss_us = 'anatomy and physiology 202'
-				elseif week = 3:
-					$glss_us = 'dosages and pharmaceuticals 102'
-				end
-			end
-		elseif $ARGS[1] = 'second':
-			if glss_sem = 1:
-				if week = 1 or week = 4:
-					$glss_us = 'anatomy and physiology 101'
-				elseif week = 2 or week = 3:
-					$glss_us = 'patient care 101'
-				end
-			elseif glss_sem = 2:
-				if week = 1 or week = 4:
-					$glss_us = 'anatomy and physiology 102'
-				elseif week = 2 or week = 3:
-					$glss_us = 'patient care 102'
-				end
-			elseif glss_sem = 3:
-				if week = 1 or week = 4:
-					$glss_us = 'anatomy and physiology 201'
-				elseif week = 2 or week = 3:
-					$glss_us = 'patient care 201'
-				end
-			elseif glss_sem = 4:
-				if week = 1 or week = 4:
-					$glss_us = 'anatomy and physiology 202'
-				elseif week = 2 or week = 3:
-					$glss_us = 'patient care 202'
-				end
-			end
-		elseif $ARGS[1] = 'third' and week = 3:
-			if glss_sem = 1:
-				$glss_us = 'anatomy and physiology 101'
-			elseif glss_sem = 2:
-				$glss_us = 'anatomy and physiology 102'
-			elseif glss_sem = 3:
-				$glss_us = 'anatomy and physiology 201'
-			elseif glss_sem = 4:
-				$glss_us = 'anatomy and physiology 202'
-			end
-		end
-	elseif $university['enrolled_in'] = 'teaching_studies':
-		if $ARGS[1] = 'first':
-			if glss_sem = 1:
-				if week = 4:
-					$glss_us = 'teaching methods 101'
-				else
-					$glss_us = 'general education 101'
-				end
-			elseif glss_sem = 2:
-				if week = 4:
-					$glss_us = 'teaching methods 102'
-				else
-					$glss_us = 'general education 102'
-				end
-			elseif glss_sem = 3:
-				if week = 4:
-					$glss_us = 'assessment 201'
-				else
-					$glss_us = 'general education 201'
-				end
-			elseif glss_sem = 4:
-				if week = 4:
-					$glss_us = 'learning theories 202'
-				else
-					$glss_us = 'general education 202'
-				end
-			end
-		elseif $ARGS[1] = 'second':
-			if glss_sem = 1:
-				if week = 1 or week = 3:
-					$glss_us = 'teaching methods 101'
-				elseif week = 2 or week = 4:
-					$glss_us = 'learning theories 101'
-				end
-			elseif glss_sem = 2:
-				if week = 1 or week = 3:
-					$glss_us = 'teaching methods 102'
-				elseif week = 2 or week = 4:
-					$glss_us = 'psychology of a student 101'
-				end
-			elseif glss_sem = 3:
-				if week = 1 or week = 3:
-					$glss_us = 'assessment 201'
-				elseif week = 2 or week = 4:
-					$glss_us = 'learning theories 201'
-				end
-			elseif glss_sem = 4:
-				if week = 1 or week = 3:
-					$glss_us = 'learning theories 202'
-				elseif week = 2 or week = 4:
-					$glss_us = 'psychology of a student 201'
-				end
-			end
-		elseif $ARGS[1] = 'third' and week = 3:
-			if glss_sem = 1:
-				$glss_us = 'learning theories 101'
-			elseif glss_sem = 2:
-				$glss_us = 'psychology of a student 101'
-			elseif glss_sem = 3:
-				$glss_us = 'learning theories 201'
-			elseif glss_sem = 4:
-				$glss_us = 'psychology of a student 201'
-			end
-		end
-	end
+	$glss_us = $func('mod_glss_uni_functions', 'field', $func('mod_glss_uni_functions', 'row', '<<$university[''enrolled_in'']>>_<<glss_sem>>_<<$ARGS[1]>>'), week)
 
 	if $glss_us ! '':
 		uni_period[$ARGS[1]] = daystart
@@ -226,81 +88,12 @@ end
 !! ---------------------------------------------------------------------
 if $ARGS[0] = 'credit_exam':
 	if uni_period['exam'] = daystart: exit
-	if university['exam_week'] = 0: exit
+	if university['exam_week'] < 1 or university['exam_week'] > 2: exit
 	if university['enrolled_in_semester'] < 1 or university['enrolled_in_semester'] > 4: exit
+	if week < 1 or week > 4: exit
 
-	killvar '$glss_us'
 	glss_sem = university['enrolled_in_semester']
-
-	if $university['enrolled_in'] = 'nursing':
-		if glss_sem = 1:
-			if university['exam_week'] = 1 and week = 4:
-				$glss_us = 'patient care 101'
-			elseif university['exam_week'] = 2 and week = 2:
-				$glss_us = 'anatomy and physiology 101'
-			elseif university['exam_week'] = 2 and week = 4:
-				$glss_us = 'examination and treatment 101'
-			end
-		elseif glss_sem = 2:
-			if university['exam_week'] = 1 and week = 4:
-				$glss_us = 'patient care 102'
-			elseif university['exam_week'] = 2 and week = 2:
-				$glss_us = 'anatomy and physiology 102'
-			elseif university['exam_week'] = 2 and week = 4:
-				$glss_us = 'examination and treatment 102'
-			end
-		elseif glss_sem = 3:
-			if university['exam_week'] = 1 and week = 4:
-				$glss_us = 'patient care 201'
-			elseif university['exam_week'] = 2 and week = 2:
-				$glss_us = 'anatomy and physiology 201'
-			elseif university['exam_week'] = 2 and week = 4:
-				$glss_us = 'dosages and pharmaceuticals 101'
-			end
-		elseif glss_sem = 4:
-			if university['exam_week'] = 1 and week = 4:
-				$glss_us = 'patient care 202'
-			elseif university['exam_week'] = 2 and week = 2:
-				$glss_us = 'anatomy and physiology 202'
-			elseif university['exam_week'] = 2 and week = 4:
-				$glss_us = 'dosages and pharmaceuticals 102'
-			end
-		end
-	elseif $university['enrolled_in'] = 'teaching_studies':
-		if glss_sem = 1:
-			if university['exam_week'] = 1 and week = 4:
-				$glss_us = 'general education 101'
-			elseif university['exam_week'] = 2 and week = 2:
-				$glss_us = 'teaching methods 101'
-			elseif university['exam_week'] = 2 and week = 4:
-				$glss_us = 'learning theories 101'
-			end
-		elseif glss_sem = 2:
-			if university['exam_week'] = 1 and week = 4:
-				$glss_us = 'general education 102'
-			elseif university['exam_week'] = 2 and week = 2:
-				$glss_us = 'teaching methods 102'
-			elseif university['exam_week'] = 2 and week = 4:
-				$glss_us = 'psychology of a student 101'
-			end
-		elseif glss_sem = 3:
-			if university['exam_week'] = 1 and week = 4:
-				$glss_us = 'general education 201'
-			elseif university['exam_week'] = 2 and week = 2:
-				$glss_us = 'assessment 201'
-			elseif university['exam_week'] = 2 and week = 4:
-				$glss_us = 'learning theories 201'
-			end
-		elseif glss_sem = 4:
-			if university['exam_week'] = 1 and week = 4:
-				$glss_us = 'general education 202'
-			elseif university['exam_week'] = 2 and week = 2:
-				$glss_us = 'learning theories 202'
-			elseif university['exam_week'] = 2 and week = 4:
-				$glss_us = 'psychology of a student 201'
-			end
-		end
-	end
+	$glss_us = $func('mod_glss_uni_functions', 'field', $func('mod_glss_uni_functions', 'row', '<<$university[''enrolled_in'']>>_<<glss_sem>>_exam'), (university['exam_week'] - 1) * 4 + week)
 
 	if $glss_us ! '':
 		uni_period['exam'] = daystart
@@ -317,20 +110,91 @@ end
 
 
 !! ---------------------------------------------------------------------
+!! row
+!! The lecture and exam timetable, copied from uni_programs
+!! set_*_period_act_* and set_exam_act_*. ARGS[1] is
+!! '<program>_<semester>_<first|second|third|exam>'. Lecture rows hold one
+!! '|' separated subject per weekday, Monday to Thursday; an empty field
+!! means no graded lecture in that slot (Monday/Tuesday/Thursday third
+!! periods are elective-only). Exam rows hold exam week 1 Monday-Thursday
+!! followed by exam week 2 Monday-Thursday. Semesters 5-8 have no rows.
+!! ---------------------------------------------------------------------
+if $ARGS[0] = 'row':
+	if $ARGS[1] = 'nursing_1_first': $result = 'patient care 101|anatomy and physiology 101|examination and treatment 101|patient care 101'
+	if $ARGS[1] = 'nursing_2_first': $result = 'patient care 102|anatomy and physiology 102|examination and treatment 102|patient care 102'
+	if $ARGS[1] = 'nursing_3_first': $result = 'patient care 201|anatomy and physiology 201|dosages and pharmaceuticals 101|patient care 201'
+	if $ARGS[1] = 'nursing_4_first': $result = 'patient care 202|anatomy and physiology 202|dosages and pharmaceuticals 102|patient care 202'
+	if $ARGS[1] = 'nursing_1_second': $result = 'anatomy and physiology 101|patient care 101|patient care 101|anatomy and physiology 101'
+	if $ARGS[1] = 'nursing_2_second': $result = 'anatomy and physiology 102|patient care 102|patient care 102|anatomy and physiology 102'
+	if $ARGS[1] = 'nursing_3_second': $result = 'anatomy and physiology 201|patient care 201|patient care 201|anatomy and physiology 201'
+	if $ARGS[1] = 'nursing_4_second': $result = 'anatomy and physiology 202|patient care 202|patient care 202|anatomy and physiology 202'
+	if $ARGS[1] = 'nursing_1_third': $result = '||anatomy and physiology 101|'
+	if $ARGS[1] = 'nursing_2_third': $result = '||anatomy and physiology 102|'
+	if $ARGS[1] = 'nursing_3_third': $result = '||anatomy and physiology 201|'
+	if $ARGS[1] = 'nursing_4_third': $result = '||anatomy and physiology 202|'
+	if $ARGS[1] = 'nursing_1_exam': $result = '|||patient care 101||anatomy and physiology 101||examination and treatment 101'
+	if $ARGS[1] = 'nursing_2_exam': $result = '|||patient care 102||anatomy and physiology 102||examination and treatment 102'
+	if $ARGS[1] = 'nursing_3_exam': $result = '|||patient care 201||anatomy and physiology 201||dosages and pharmaceuticals 101'
+	if $ARGS[1] = 'nursing_4_exam': $result = '|||patient care 202||anatomy and physiology 202||dosages and pharmaceuticals 102'
+	if $ARGS[1] = 'teaching_studies_1_first': $result = 'general education 101|general education 101|general education 101|teaching methods 101'
+	if $ARGS[1] = 'teaching_studies_2_first': $result = 'general education 102|general education 102|general education 102|teaching methods 102'
+	if $ARGS[1] = 'teaching_studies_3_first': $result = 'general education 201|general education 201|general education 201|assessment 201'
+	if $ARGS[1] = 'teaching_studies_4_first': $result = 'general education 202|general education 202|general education 202|learning theories 202'
+	if $ARGS[1] = 'teaching_studies_1_second': $result = 'teaching methods 101|learning theories 101|teaching methods 101|learning theories 101'
+	if $ARGS[1] = 'teaching_studies_2_second': $result = 'teaching methods 102|psychology of a student 101|teaching methods 102|psychology of a student 101'
+	if $ARGS[1] = 'teaching_studies_3_second': $result = 'assessment 201|learning theories 201|assessment 201|learning theories 201'
+	if $ARGS[1] = 'teaching_studies_4_second': $result = 'learning theories 202|psychology of a student 201|learning theories 202|psychology of a student 201'
+	if $ARGS[1] = 'teaching_studies_1_third': $result = '||learning theories 101|'
+	if $ARGS[1] = 'teaching_studies_2_third': $result = '||psychology of a student 101|'
+	if $ARGS[1] = 'teaching_studies_3_third': $result = '||learning theories 201|'
+	if $ARGS[1] = 'teaching_studies_4_third': $result = '||psychology of a student 201|'
+	if $ARGS[1] = 'teaching_studies_1_exam': $result = '|||general education 101||teaching methods 101||learning theories 101'
+	if $ARGS[1] = 'teaching_studies_2_exam': $result = '|||general education 102||teaching methods 102||psychology of a student 101'
+	if $ARGS[1] = 'teaching_studies_3_exam': $result = '|||general education 201||assessment 201||learning theories 201'
+	if $ARGS[1] = 'teaching_studies_4_exam': $result = '|||general education 202||learning theories 202||psychology of a student 201'
+	exit
+end
+
+
+!! ---------------------------------------------------------------------
+!! field
+!! $result = field number ARGS[2] (counting from 1) of the '|' separated
+!! string ARGS[1], or '' when there is no such field.
+!! ---------------------------------------------------------------------
+if $ARGS[0] = 'field':
+	$glss_rest = $ARGS[1] + '|'
+	glss_n = ARGS[2]
+	:glss_field_loop
+	glss_pos = instr($glss_rest, '|')
+	if glss_n > 1 and glss_pos > 0: $glss_rest = $mid($glss_rest, glss_pos + 1) & glss_n -= 1 & jump 'glss_field_loop'
+	if glss_n = 1 and glss_pos > 0: $result = $mid($glss_rest, 1, glss_pos - 1)
+	killvar '$glss_rest'
+	killvar 'glss_n'
+	killvar 'glss_pos'
+	exit
+end
+
+
+!! ---------------------------------------------------------------------
 !! ghost_credit
-!! Background credit for lectures and exam due today, wherever the
-!! player is. Runs from the dispatcher, so it must not print or change
-!! the screen. Zero time cost, same as the school ghost_credit - attendance
-!! happens in the background while the player spends the day elsewhere.
+!! Background credit for the lectures and exam that have started today,
+!! wherever the player is. Runs from the dispatcher (from 9:00), so it must
+!! not print or change the screen. Zero time cost, same as the school
+!! ghost_credit. A period is only credited once its class has started
+!! (9:00, 11:00, 13:15), so a later lecture stays available in person until
+!! then; credit_period skips a period the player already attended.
 !! ---------------------------------------------------------------------
 if $ARGS[0] = 'ghost_credit':
+	glss_third_started = 0
+	if hour > 13 or (hour = 13 and minut >= 15): glss_third_started = 1
 	if university['semester_week'] > 0:
 		gs 'mod_glss_uni_functions', 'credit_period', 'first'
-		gs 'mod_glss_uni_functions', 'credit_period', 'second'
-		gs 'mod_glss_uni_functions', 'credit_period', 'third'
+		if hour >= 11: gs 'mod_glss_uni_functions', 'credit_period', 'second'
+		if glss_third_started = 1: gs 'mod_glss_uni_functions', 'credit_period', 'third'
 	end
 	if university['exam_week'] > 0: gs 'mod_glss_uni_functions', 'credit_exam'
-	if glss['uni_electives'] = 1: gs 'mod_glss_uni_electives_functions', 'ghost_credit'
+	if glss['uni_electives'] = 1 and glss_third_started = 1: gs 'mod_glss_uni_electives_functions', 'ghost_credit'
+	killvar 'glss_third_started'
 	exit
 end
 
